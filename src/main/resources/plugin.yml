@@ -1,0 +1,10 @@
+name: mcmmo_webstats
+main: org.liquidbeef.mcmmo_webstats.McmmoWebStats
+version: 0.01
+
+commands:
+   basic:
+      description: This is a demo command.
+      usage: /<command> [player]
+      permission: <plugin name>.basic
+      permission-message: You don't have <permission>
