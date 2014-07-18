@@ -9,15 +9,15 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class LoginListener implements Listener {
 
-   private McmmoWebStats plugIn;
+   private NewsFeedPlugin plugIn;
 
-   public LoginListener(McmmoWebStats thePlugin) {
+   public LoginListener(NewsFeedPlugin thePlugin) {
       plugIn = thePlugin;
    }
 
    @EventHandler
    public void onPlayerLogin(PlayerLoginEvent event) {
-      Database db = McmmoWebStats.getSqliteDatabase();
+      Database db = NewsFeedPlugin.getSqliteDatabase();
       try {
          db.insertRecordNewPlayer(event.getPlayer().getName()); 
          db.insertPlayerLogin(event.getPlayer().getName(), System.currentTimeMillis());
@@ -28,7 +28,7 @@ public class LoginListener implements Listener {
    
    @EventHandler
    public void onPlayerQuit(PlayerQuitEvent event) {
-      Database db = McmmoWebStats.getSqliteDatabase();
+      Database db = NewsFeedPlugin.getSqliteDatabase();
       try {
          db.insertPlayerQuit(event.getPlayer().getName(), System.currentTimeMillis());
       } catch (SQLException e) {

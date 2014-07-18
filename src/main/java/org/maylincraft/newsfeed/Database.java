@@ -10,7 +10,7 @@ import java.sql.Statement;
 public class Database {
 
    public static final String driver = "org.sqlite.JDBC";
-   public static final String connectionStr = "jdbc:sqlite:plugins/WebStats/DB/WebStats.sqlite";
+   public static final String connectionStr = "jdbc:sqlite:plugins/newsfeed/db/newsfeed.sqlite";
 
    private Connection connection = null;
 
