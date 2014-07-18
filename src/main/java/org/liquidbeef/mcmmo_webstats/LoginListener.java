@@ -23,7 +23,7 @@ public class LoginListener implements Listener {
    public void onPlayerLogin(PlayerLoginEvent event) {
       Database db = McmmoWebStats.getSqliteDatabase();
       try {
-         db.insertPlayerLogin(event.getPlayer().getName(), getIsoTime());
+         db.insertPlayerLogin(event.getPlayer().getName(), System.currentTimeMillis());
       } catch (SQLException e) {
          plugIn.getLogger().warning(e.getMessage());
       }
@@ -33,7 +33,7 @@ public class LoginListener implements Listener {
    public void onPlayerQuit(PlayerQuitEvent event) {
       Database db = McmmoWebStats.getSqliteDatabase();
       try {
-         db.insertPlayerQuit(event.getPlayer().getName(), getIsoTime());
+         db.insertPlayerQuit(event.getPlayer().getName(), System.currentTimeMillis());
       } catch (SQLException e) {
          plugIn.getLogger().warning(e.getMessage());
       }

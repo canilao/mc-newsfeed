@@ -34,12 +34,12 @@ public class Database {
       connection.close();
    }
 
-   public void insertPlayerLogin(String name, String time) throws SQLException {
+   public void insertPlayerLogin(String name, long time) throws SQLException {
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
       query.append("INSERT INTO logins (playerId, time, action) ");
-      query.append("select id, '%s', 'login' ");
+      query.append("select id, %d, 'login' ");
       query.append("from players where name ='%s'");
       query.append(";");
 
@@ -50,12 +50,12 @@ public class Database {
       stmt.executeUpdate(querySql);
    }
 
-   public void insertPlayerQuit(String name, String time) throws SQLException {
+   public void insertPlayerQuit(String name, long time) throws SQLException {
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
       query.append("INSERT INTO logins (playerId, time, action) ");
-      query.append("select id, '%s', 'logout'");
+      query.append("select id, %d, 'logout'");
       query.append("from players where name ='%s'");
       query.append(";");
 
@@ -95,7 +95,7 @@ public class Database {
       query.append("id INTEGER PRIMARY KEY AUTOINCREMENT,");
       query.append("playerId INTEGER,");
       query.append("action TEXT,");
-      query.append("time TEXT");     
+      query.append("time INTEGER");     
       query.append(");");
 
       stmt = connection.prepareStatement(query.toString());
