@@ -1,4 +1,4 @@
-package org.liquidbeef.mcmmo_webstats;
+package org.maylincraft.newsfeed;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -48,6 +48,8 @@ public class Database {
       stmt = connection.createStatement();
 
       stmt.executeUpdate(querySql);
+      
+      stmt.close();
    }
 
    public void insertPlayerQuit(String name, long time) throws SQLException {
@@ -64,6 +66,8 @@ public class Database {
       stmt = connection.createStatement();
 
       stmt.executeUpdate(querySql);
+      
+      stmt.close();
    }
 
    private void createTables() throws SQLException {
@@ -102,6 +106,21 @@ public class Database {
 
       stmt.executeUpdate();
 
+      stmt.close();
+   }
+
+   public void insertRecordNewPlayer(String name) throws SQLException {
+      Statement stmt = null;
+      StringBuilder query = new StringBuilder();
+
+      query.append("INSERT OR IGNORE INTO players (name) VALUES ('%s');");
+      
+      String querySql = String.format(query.toString(), name);
+
+      stmt = connection.createStatement();
+
+      stmt.executeUpdate(querySql);
+      
       stmt.close();
    }
 }

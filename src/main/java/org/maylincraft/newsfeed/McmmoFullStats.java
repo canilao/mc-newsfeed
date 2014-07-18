@@ -1,17 +1,16 @@
-package org.liquidbeef.mcmmo_webstats;
+package org.maylincraft.newsfeed;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -21,14 +20,15 @@ import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.datatypes.skills.SkillType;
 import com.gmail.nossr50.util.player.UserManager;
 
-public class HelloWorld extends AbstractHandler {
+public class McmmoFullStats extends HttpServlet {
+
+   private static final long serialVersionUID = -8878317726882341382L;
 
    static HashMap<String, PlayerProfile> playerProfileCache = new HashMap<String, PlayerProfile>();
    static long lastCachedPlayerProfiles = 0L;
 
    @SuppressWarnings("unchecked")
-   public void handle(String target, Request baseRequest,
-         HttpServletRequest request, HttpServletResponse response)
+   public void doGet(HttpServletRequest request, HttpServletResponse response)
          throws IOException, ServletException {
 
       McMMOPlayer player;
@@ -118,7 +118,7 @@ public class HelloWorld extends AbstractHandler {
 
       response.setContentType("text/html;charset=utf-8");
       response.setStatus(HttpServletResponse.SC_OK);
-      baseRequest.setHandled(true);
+
       response.getWriter().println(jsonArray.toJSONString());
       response.addHeader("Access-Control-Allow-Origin", "*");
    }

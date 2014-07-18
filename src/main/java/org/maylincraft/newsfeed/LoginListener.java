@@ -1,10 +1,6 @@
-package org.liquidbeef.mcmmo_webstats;
+package org.maylincraft.newsfeed;
 
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,6 +19,7 @@ public class LoginListener implements Listener {
    public void onPlayerLogin(PlayerLoginEvent event) {
       Database db = McmmoWebStats.getSqliteDatabase();
       try {
+         db.insertRecordNewPlayer(event.getPlayer().getName()); 
          db.insertPlayerLogin(event.getPlayer().getName(), System.currentTimeMillis());
       } catch (SQLException e) {
          plugIn.getLogger().warning(e.getMessage());
@@ -39,6 +36,7 @@ public class LoginListener implements Listener {
       }
    }
 
+   /*
    private String getIsoTime() {
       TimeZone tz = TimeZone.getTimeZone("UTC");
       DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -47,4 +45,5 @@ public class LoginListener implements Listener {
 
       return nowAsISO;
    }
+   */
 }
