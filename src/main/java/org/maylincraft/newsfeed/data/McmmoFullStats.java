@@ -1,4 +1,4 @@
-package org.maylincraft.newsfeed;
+package org.maylincraft.newsfeed.data;
 
 import java.io.IOException;
 import java.util.HashMap;

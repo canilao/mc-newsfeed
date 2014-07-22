@@ -12,6 +12,8 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.maylincraft.newsfeed.listeners.McmmoXpGainListener;
+import org.maylincraft.newsfeed.data.McmmoFullStats;;
 
 public class NewsFeedPlugin extends JavaPlugin {
 
@@ -91,30 +93,36 @@ public class NewsFeedPlugin extends JavaPlugin {
    private void registerListeners() {
       getServer().getPluginManager().registerEvents(new LoginListener(this),
             this);
+      getServer().getPluginManager().registerEvents(
+            new McmmoXpGainListener(this), this);
    }
 
    private void startWebServer() throws Exception {
       Server server = new Server(1975);
-      
-      ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+
+      ServletContextHandler context = new ServletContextHandler(
+            ServletContextHandler.SESSIONS);
       context.setContextPath("/");
       server.setHandler(context);
-      
+
       ResourceHandler resource_handler = new ResourceHandler();
       resource_handler.setDirectoriesListed(true);
       resource_handler.setWelcomeFiles(new String[] { "index.html" });
       resource_handler.setResourceBase("plugins/newsfeed/web");
-      
+
       context.setContextPath("/");
       context.setResourceBase("plugins/newsfeed/web");
       context.setClassLoader(Thread.currentThread().getContextClassLoader());
-      
-      ServletContextHandler helloContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+
+      ServletContextHandler helloContextHandler = new ServletContextHandler(
+            ServletContextHandler.SESSIONS);
       helloContextHandler.setContextPath("/data");
-      helloContextHandler.addServlet(new ServletHolder(new McmmoFullStats()),"/*");
+      helloContextHandler.addServlet(new ServletHolder(new McmmoFullStats()),
+            "/*");
 
       ContextHandlerCollection contexts = new ContextHandlerCollection();
-      contexts.setHandlers(new Handler[] { resource_handler, helloContextHandler });
+      contexts.setHandlers(new Handler[] { resource_handler,
+            helloContextHandler });
 
       server.setHandler(contexts);
 
