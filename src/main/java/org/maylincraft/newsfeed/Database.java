@@ -6,14 +6,26 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class Database {
 
-   public static final String driver = "org.sqlite.JDBC";
-   public static final String connectionStr = "jdbc:sqlite:plugins/newsfeed/db/newsfeed.sqlite";
+   public static final String driver = "org.h2.Driver";
+   public static final String connectionStr = "jdbc:h2:./plugins/newsfeed/db/newsfeed.db;USER=sa;PASSWORD=sa";
 
    private Connection connection = null;
 
+   static public String getIsoTime() {
+      TimeZone tz = TimeZone.getTimeZone("UTC");
+      DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      df.setTimeZone(tz);
+      String nowAsISO = df.format(new Date());
+      return nowAsISO;
+   }
+   
    public Database() {
    }
 
@@ -34,13 +46,13 @@ public class Database {
       connection.close();
    }
 
-   public void insertPlayerLogin(String name, long time) throws SQLException {
+   public void insertPlayerLogin(String name, String time) throws SQLException {
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
       query.append("INSERT INTO logins (playerId, time, action) ");
-      query.append("select id, %d, 'login' ");
-      query.append("from players where name ='%s'");
+      query.append("SELECT id, '%s', 'login' ");
+      query.append("FROM players WHERE name ='%s'");
       query.append(";");
 
       String querySql = String.format(query.toString(), time, name);
@@ -48,17 +60,17 @@ public class Database {
       stmt = connection.createStatement();
 
       stmt.executeUpdate(querySql);
-      
+
       stmt.close();
    }
 
-   public void insertPlayerQuit(String name, long time) throws SQLException {
+   public void insertPlayerQuit(String name, String time) throws SQLException {
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
       query.append("INSERT INTO logins (playerId, time, action) ");
-      query.append("select id, %d, 'logout'");
-      query.append("from players where name ='%s'");
+      query.append("SELECT id, '%s', 'logout'");
+      query.append("FROM players WHERE name ='%s'");
       query.append(";");
 
       String querySql = String.format(query.toString(), time, name);
@@ -66,7 +78,7 @@ public class Database {
       stmt = connection.createStatement();
 
       stmt.executeUpdate(querySql);
-      
+
       stmt.close();
    }
 
@@ -80,8 +92,8 @@ public class Database {
       StringBuilder query = new StringBuilder();
 
       query.append("CREATE TABLE IF NOT EXISTS players (");
-      query.append("id INTEGER PRIMARY KEY AUTOINCREMENT,");
-      query.append("name TEXT UNIQUE");
+      query.append("id INTEGER IDENTITY,");
+      query.append("name VARCHAR(16) UNIQUE");
       query.append(");");
 
       stmt = connection.prepareStatement(query.toString());
@@ -96,10 +108,10 @@ public class Database {
       StringBuilder query = new StringBuilder();
 
       query.append("CREATE TABLE IF NOT EXISTS logins (");
-      query.append("id INTEGER PRIMARY KEY AUTOINCREMENT,");
-      query.append("playerId INTEGER,");
-      query.append("action TEXT,");
-      query.append("time INTEGER");     
+      query.append("id BIGINT IDENTITY,");
+      query.append("playerId INT,");
+      query.append("action VARCHAR(10),");
+      query.append("time TIMESTAMP");
       query.append(");");
 
       stmt = connection.prepareStatement(query.toString());
@@ -113,14 +125,14 @@ public class Database {
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
-      query.append("INSERT OR IGNORE INTO players (name) VALUES ('%s');");
-      
-      String querySql = String.format(query.toString(), name);
+      query.append("MERGE INTO players KEY(name) VALUES(SELECT id FROM players WHERE name='%s', '%s');");
+
+      String querySql = String.format(query.toString(), name, name);
 
       stmt = connection.createStatement();
 
       stmt.executeUpdate(querySql);
-      
+
       stmt.close();
    }
 }

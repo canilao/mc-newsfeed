@@ -20,7 +20,7 @@ public class LoginListener implements Listener {
       Database db = NewsFeedPlugin.getSqliteDatabase();
       try {
          db.insertRecordNewPlayer(event.getPlayer().getName()); 
-         db.insertPlayerLogin(event.getPlayer().getName(), System.currentTimeMillis());
+         db.insertPlayerLogin(event.getPlayer().getName(), Database.getIsoTime());
       } catch (SQLException e) {
          plugIn.getLogger().warning(e.getMessage());
       }
@@ -30,20 +30,9 @@ public class LoginListener implements Listener {
    public void onPlayerQuit(PlayerQuitEvent event) {
       Database db = NewsFeedPlugin.getSqliteDatabase();
       try {
-         db.insertPlayerQuit(event.getPlayer().getName(), System.currentTimeMillis());
+         db.insertPlayerQuit(event.getPlayer().getName(), Database.getIsoTime());
       } catch (SQLException e) {
          plugIn.getLogger().warning(e.getMessage());
       }
    }
-
-   /*
-   private String getIsoTime() {
-      TimeZone tz = TimeZone.getTimeZone("UTC");
-      DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-      df.setTimeZone(tz);
-      String nowAsISO = df.format(new Date());
-
-      return nowAsISO;
-   }
-   */
 }

@@ -1,5 +1,5 @@
-name: mcmmo_webstats
-main: org.liquidbeef.mcmmo_webstats.McmmoWebStats
+name: newsfeed
+main: org.maylincraft.newsfeed.NewsFeedPlugin
 version: 0.01
 
 commands:
