@@ -47,11 +47,6 @@
          <version>1.1.1</version>
       </dependency>
       <dependency>
-         <groupId>org.xerial</groupId>
-         <artifactId>sqlite-jdbc</artifactId>
-         <version>3.7.2</version>
-      </dependency>
-      <dependency>
          <groupId>com.gmail.nossr50.mcMMO</groupId>
          <artifactId>mcMMO</artifactId>
          <version>1.5.00</version>
@@ -124,8 +119,6 @@
                            <include>org.spout:simplenbt:jar:*</include>
                            <include>com.googlecode.json-simple:json-simple:*</include>
                            <include>org.yaml:snakeyaml:*</include>
-                           <include>org.xerial:sqlite-jdbc:jar:*</include>
-                           <include>com.gmail.nossr50.mcMMO:mcMMO:jar:1.5.00</include>
                            <include>com.h2database:h2*:jar:*</include>
                         </includes>
                      </artifactSet>
