@@ -50,7 +50,7 @@ public class Database {
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
-      query.append("INSERT INTO logins (playerId, time, action) ");
+      query.append("INSERT INTO logins (player_Id, time, action) ");
       query.append("SELECT id, '%s', 'login' ");
       query.append("FROM players WHERE name ='%s'");
       query.append(";");
@@ -68,7 +68,7 @@ public class Database {
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
-      query.append("INSERT INTO logins (playerId, time, action) ");
+      query.append("INSERT INTO logins (player_Id, time, action) ");
       query.append("SELECT id, '%s', 'logout'");
       query.append("FROM players WHERE name ='%s'");
       query.append(";");
@@ -109,7 +109,7 @@ public class Database {
 
       query.append("CREATE TABLE IF NOT EXISTS logins (");
       query.append("id BIGINT IDENTITY,");
-      query.append("playerId INT,");
+      query.append("player_Id INT,");
       query.append("action VARCHAR(10),");
       query.append("time TIMESTAMP");
       query.append(");");
