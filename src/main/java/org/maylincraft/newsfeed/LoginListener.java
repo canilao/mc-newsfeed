@@ -17,7 +17,7 @@ public class LoginListener implements Listener {
 
    @EventHandler
    public void onPlayerLogin(PlayerLoginEvent event) {
-      Database db = NewsFeedPlugin.getSqliteDatabase();
+      Database db = NewsFeedPlugin.getNewsFeedDatabase();
       try {
          db.insertRecordNewPlayer(event.getPlayer().getName()); 
          db.insertPlayerLogin(event.getPlayer().getName(), Database.getIsoTime());
@@ -28,7 +28,7 @@ public class LoginListener implements Listener {
    
    @EventHandler
    public void onPlayerQuit(PlayerQuitEvent event) {
-      Database db = NewsFeedPlugin.getSqliteDatabase();
+      Database db = NewsFeedPlugin.getNewsFeedDatabase();
       try {
          db.insertPlayerQuit(event.getPlayer().getName(), Database.getIsoTime());
       } catch (SQLException e) {

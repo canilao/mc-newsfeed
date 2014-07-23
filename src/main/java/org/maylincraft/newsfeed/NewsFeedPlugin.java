@@ -19,7 +19,7 @@ public class NewsFeedPlugin extends JavaPlugin {
 
    private static Database db;
 
-   public static Database getSqliteDatabase() {
+   public static Database getNewsFeedDatabase() {
       return db;
    }
 
