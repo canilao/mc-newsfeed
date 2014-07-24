@@ -1,5 +1,7 @@
 package org.maylincraft.newsfeed;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
 
 import org.bukkit.command.Command;
@@ -13,29 +15,40 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.maylincraft.newsfeed.listeners.McmmoXpGainListener;
-import org.maylincraft.newsfeed.data.McmmoFullStats;;
+import org.maylincraft.newsfeed.data.McmmoFullStats;
+
+;
 
 public class NewsFeedPlugin extends JavaPlugin {
 
    private static Database db;
+   private static NewsFeedPlugin thePlugin;
 
    public static Database getNewsFeedDatabase() {
       return db;
    }
 
+   public static void logSevere(String msg, Exception e) {
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      e.printStackTrace(pw);
+      thePlugin.getLogger().severe(msg + " - " + sw.toString());
+   }
+
    @Override
    public void onEnable() {
+      thePlugin = this;
       // Initialize the database.
       try {
          initializeDatabase();
       } catch (InstantiationException e) {
-         logSevere("Failed to initialize database: " + e.getMessage());
+         logSevere("Failed to initialize database: ", e);
       } catch (IllegalAccessException e) {
-         logSevere("Failed to initialize database: " + e.getMessage());
+         logSevere("Failed to initialize database: ", e);
       } catch (ClassNotFoundException e) {
-         logSevere("Failed to initialize database: " + e.getMessage());
+         logSevere("Failed to initialize database: ", e);
       } catch (SQLException e) {
-         logSevere("Failed to initialize database: " + e.getMessage());
+         logSevere("Failed to initialize database: ", e);
       }
 
       // Register our event listeners.
@@ -45,7 +58,7 @@ public class NewsFeedPlugin extends JavaPlugin {
       try {
          startWebServer();
       } catch (Exception e) {
-         logSevere("Failed to initialize webserver: " + e.getMessage());
+         logSevere("Failed to initialize webserver: ", e);
       }
    }
 
@@ -54,7 +67,7 @@ public class NewsFeedPlugin extends JavaPlugin {
       try {
          db.close();
       } catch (SQLException e) {
-         logSevere("Failed to close the database: " + e.getMessage());
+         logSevere("Failed to close the database: ", e);
       }
    }
 
@@ -78,10 +91,6 @@ public class NewsFeedPlugin extends JavaPlugin {
          return true;
       }
       return false;
-   }
-
-   private void logSevere(String msg) {
-      this.getLogger().severe(msg);
    }
 
    private void initializeDatabase() throws InstantiationException,

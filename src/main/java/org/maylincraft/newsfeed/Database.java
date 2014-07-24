@@ -17,7 +17,7 @@ import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
 public class Database {
 
    public static final String driver = "org.h2.Driver";
-   public static final String connectionStr = "jdbc:h2:plugins/newsfeed/db/newsfeed.db;USER=sa;PASSWORD=sa";
+   public static final String connectionStr = "jdbc:h2:./plugins/newsfeed/db/newsfeed.db";
 
    private Connection connection = null;
 
@@ -42,7 +42,8 @@ public class Database {
          IllegalAccessException, ClassNotFoundException, SQLException {
       Driver drvr = (Driver) Class.forName(driver).newInstance();
       DriverManager.registerDriver(drvr);
-      connection = DriverManager.getConnection(connectionStr);
+      connection = DriverManager
+            .getConnection(connectionStr, "craft", "bukkit");
    }
 
    public void close() throws SQLException {
@@ -90,11 +91,12 @@ public class Database {
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
-      query.append("INSERT INTO mcmmo_levelup_events (player_Id, time, skill_type, level) ");
-      query.append("VALUES (%d, '%s', '%s', %d);");
+      query.append("INSERT INTO mcmmo_levelup_events (event_uuid, player_Id, time, skill_type, level) ");
+      query.append("VALUES ( RANDOM_UUID(), %d, '%s', '%s', %d);");
 
       String querySql = String.format(query.toString(), getPlayerId(event
-            .getPlayer().getName()), getIsoTime(), event.getSkill().getName(), event.getSkillLevel());
+            .getPlayer().getName()), getIsoTime(), event.getSkill().getName(),
+            event.getSkillLevel());
 
       stmt = connection.createStatement();
 
@@ -145,6 +147,7 @@ public class Database {
 
       query.append("CREATE TABLE IF NOT EXISTS mcmmo_levelup_events (");
       query.append("id INTEGER IDENTITY,");
+      query.append("event_uuid UUID,");
       query.append("player_Id INT,");
       query.append("time TIMESTAMP,");
       query.append("skill_type VARCHAR(20),");
