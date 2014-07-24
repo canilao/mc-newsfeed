@@ -60,7 +60,7 @@ public class Database {
       query.append("    SELECT id, '%s',");
       query.append("        CASE WHEN (");
       query.append("                SELECT COUNT(*) FROM LOGINS WHERE player_id=(");
-      query.append("                    SELECT * FROM PLAYERS WHERE name='%s')");
+      query.append("                    SELECT id FROM PLAYERS WHERE name='%s')");
       query.append("                ) > 0  THEN 'login'");
       query.append("        ELSE 'initial'");
       query.append("        END");
