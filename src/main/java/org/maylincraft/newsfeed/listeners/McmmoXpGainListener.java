@@ -1,6 +1,5 @@
 package org.maylincraft.newsfeed.listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.maylincraft.newsfeed.NewsFeedPlugin;
@@ -23,7 +22,7 @@ public class McmmoXpGainListener implements Listener {
       try {
          processLevelUpEvent(event);
       } catch (Exception e) {
-         Bukkit.getLogger().warning("Failed processLevelUpEvent()");
+         NewsFeedPlugin.logWarning("Failed processLevelUpEvent()", e);
       }
    }
 

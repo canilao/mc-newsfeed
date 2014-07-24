@@ -12,12 +12,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.PlayerDeathEvent;
+
 import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
 
 public class Database {
 
    public static final String driver = "org.h2.Driver";
-   public static final String connectionStr = "jdbc:h2:./plugins/newsfeed/db/newsfeed.db";
+   public static final String connectionStr = "jdbc:h2:./plugins/newsfeed/db/newsfeed.db;USER=sa;PASSWORD=password";
 
    private Connection connection = null;
 
@@ -42,8 +45,7 @@ public class Database {
          IllegalAccessException, ClassNotFoundException, SQLException {
       Driver drvr = (Driver) Class.forName(driver).newInstance();
       DriverManager.registerDriver(drvr);
-      connection = DriverManager
-            .getConnection(connectionStr, "craft", "bukkit");
+      connection = DriverManager.getConnection(connectionStr);
    }
 
    public void close() throws SQLException {
@@ -54,12 +56,19 @@ public class Database {
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
-      query.append("INSERT INTO logins (player_Id, time, action) ");
-      query.append("SELECT id, '%s', 'login' ");
-      query.append("FROM players WHERE name ='%s'");
+      query.append("INSERT INTO logins (player_Id, time, action)");
+      query.append("    SELECT id, '%s',");
+      query.append("        CASE WHEN (");
+      query.append("                SELECT COUNT(*) FROM LOGINS WHERE player_id=(");
+      query.append("                    SELECT * FROM PLAYERS WHERE name='%s')");
+      query.append("                ) > 0  THEN 'login'");
+      query.append("        ELSE 'initial'");
+      query.append("        END");
+      query.append("    FROM players");
+      query.append("    WHERE name ='%s'");
       query.append(";");
 
-      String querySql = String.format(query.toString(), time, name);
+      String querySql = String.format(query.toString(), time, name, name);
 
       stmt = connection.createStatement();
 
@@ -139,6 +148,7 @@ public class Database {
       createPlayersTable();
       createLoginTable();
       createMcmmoLevelUpEventTable();
+      createPlayerDeathTable();
    }
 
    private void createMcmmoLevelUpEventTable() throws SQLException {
@@ -195,6 +205,28 @@ public class Database {
       stmt.close();
    }
 
+   private void createPlayerDeathTable() throws SQLException {
+      PreparedStatement stmt;
+      StringBuilder query = new StringBuilder();
+
+      query.append("CREATE TABLE IF NOT EXISTS player_death_events (");
+      query.append("  id INTEGER IDENTITY,");
+      query.append("  event_uuid UUID,");
+      query.append("  player_Id INT,");
+      query.append("  time TIMESTAMP,");
+      query.append("  killers_name VARCHAR(20),");
+      query.append("  cause_of_death VARCHAR(30),");
+      query.append("  death_message VARCHAR(40),");
+      query.append("  weapon_used VARCHAR(40),");
+      query.append(");");
+
+      stmt = connection.prepareStatement(query.toString());
+
+      stmt.executeUpdate();
+
+      stmt.close();
+   }
+
    public void insertRecordNewPlayer(String name) throws SQLException {
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
@@ -208,5 +240,75 @@ public class Database {
       stmt.executeUpdate(querySql);
 
       stmt.close();
+   }
+
+   public void insertPlayerDeath(PlayerDeathEvent event) throws SQLException {
+      Statement stmt = null;
+      StringBuilder query = new StringBuilder();
+
+      query.append("INSERT INTO player_death_events (");
+      query.append("  event_uuid,");
+      query.append("  player_Id,");
+      query.append("  time,");
+      query.append("  killers_name,");
+      query.append("  cause_of_death,");
+      query.append("  death_message,");
+      query.append("  weapon_used");
+      query.append(") ");
+      query.append("VALUES (");
+      query.append("  RANDOM_UUID(),");
+      query.append("  SELECT id FROM PLAYERS WHERE name=%s,");
+      query.append("  '%s',");
+      query.append("  %s,");
+      query.append("  %s,");
+      query.append("  %s,");
+      query.append("  %s");
+      query.append("); ");
+
+      String deadPlayersName = null;
+      String causeOfDeath = null;
+      String deathMessage = null;
+      String weaponUsed = null;
+      String killersName = null;
+
+      if (event.getDeathMessage() != null) {
+         deathMessage = event.getDeathMessage();
+      }
+      if (event.getEntity() != null) {
+         if (event.getEntity().getName() != null) {
+            deadPlayersName = event.getEntity().getName();
+         }
+         if (event.getEntity().getLastDamageCause() != null
+               && event.getEntity().getLastDamageCause().getCause() != null) {
+            causeOfDeath = event.getEntity().getLastDamageCause().getCause()
+                  .toString();
+         }
+         if (event.getEntity().getKiller() != null) {
+            if (event.getEntity().getKiller() instanceof Player) {
+               Player p = (Player) event.getEntity();
+               p.getItemInHand().getType().toString();
+               weaponUsed = p.getKiller().getItemInHand().getType().toString();
+               killersName = p.getKiller().getName();
+            }
+         }
+      }
+
+      String querySql = String.format(query.toString(),
+            deadPlayersName == null ? "null" : surroundQuotes(deadPlayersName),
+            getIsoTime(), killersName == null ? "null"
+                  : surroundQuotes(killersName), causeOfDeath == null ? "null"
+                  : surroundQuotes(causeOfDeath), deathMessage == null ? "null"
+                  : surroundQuotes(deathMessage), weaponUsed == null ? "null"
+                  : surroundQuotes(weaponUsed));
+
+      stmt = connection.createStatement();
+
+      stmt.executeUpdate(querySql);
+
+      stmt.close();
+   }
+
+   private String surroundQuotes(String text) {
+      return "'" + text + "'";
    }
 }
