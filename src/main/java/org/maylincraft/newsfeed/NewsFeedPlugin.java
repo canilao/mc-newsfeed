@@ -209,7 +209,7 @@ public class NewsFeedPlugin extends JavaPlugin {
       resource_handler.setWelcomeFiles(new String[] { "index.html" });
       resource_handler.setResourceBase("plugins/newsfeed/web");
 
-      context.setContextPath("/");
+      context.setContextPath("/newsfeed");
       context.setResourceBase("plugins/newsfeed/web");
       context.setHandler(resource_handler);
       context.setClassLoader(Thread.currentThread().getContextClassLoader());
