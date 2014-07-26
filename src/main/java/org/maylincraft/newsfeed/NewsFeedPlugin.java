@@ -203,8 +203,6 @@ public class NewsFeedPlugin extends JavaPlugin {
 
       ServletContextHandler context = new ServletContextHandler(
             ServletContextHandler.SESSIONS);
-      context.setContextPath("/");
-      server.setHandler(context);
 
       ResourceHandler resource_handler = new ResourceHandler();
       resource_handler.setDirectoriesListed(true);
@@ -213,16 +211,19 @@ public class NewsFeedPlugin extends JavaPlugin {
 
       context.setContextPath("/");
       context.setResourceBase("plugins/newsfeed/web");
+      context.setHandler(resource_handler);
       context.setClassLoader(Thread.currentThread().getContextClassLoader());
 
       ServletContextHandler helloContextHandler = new ServletContextHandler(
             ServletContextHandler.SESSIONS);
       helloContextHandler.setContextPath("/data");
       helloContextHandler.addServlet(new ServletHolder(new McmmoFullStats()),
-            "/*");
+            "/fullstats");
+      helloContextHandler.addServlet(new ServletHolder(new McmmoFullStats()),
+            "/newsfeed");
 
       ContextHandlerCollection contexts = new ContextHandlerCollection();
-      contexts.setHandlers(new Handler[] { resource_handler,
+      contexts.setHandlers(new Handler[] { context,
             helloContextHandler });
 
       server.setHandler(contexts);
