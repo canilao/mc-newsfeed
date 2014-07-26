@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
@@ -149,6 +150,7 @@ public class Database {
       createLoginTable();
       createMcmmoLevelUpEventTable();
       createPlayerDeathTable();
+      createDiamonOreBreakTable();
    }
 
    private void createMcmmoLevelUpEventTable() throws SQLException {
@@ -216,7 +218,7 @@ public class Database {
       query.append("  time TIMESTAMP,");
       query.append("  killers_name VARCHAR(20),");
       query.append("  cause_of_death VARCHAR(30),");
-      query.append("  death_message VARCHAR(40),");
+      query.append("  death_message VARCHAR(100),");
       query.append("  weapon_used VARCHAR(40),");
       query.append(");");
 
@@ -310,5 +312,54 @@ public class Database {
 
    private String surroundQuotes(String text) {
       return "'" + text + "'";
+   }
+
+   private void createDiamonOreBreakTable() throws SQLException {
+      PreparedStatement stmt;
+      StringBuilder query = new StringBuilder();
+
+      query.append("CREATE TABLE IF NOT EXISTS block_break_events (");
+      query.append("  id INTEGER IDENTITY,");
+      query.append("  event_uuid UUID,");
+      query.append("  player_Id INT,");
+      query.append("  time TIMESTAMP,");
+      query.append("  blockType VARCHAR(40)");
+      query.append(");");
+
+      stmt = connection.prepareStatement(query.toString());
+
+      stmt.executeUpdate();
+
+      stmt.close();
+   }
+   
+   public void insertDiamondOreBreak(BlockBreakEvent event) throws SQLException {
+      Statement stmt = null;
+      StringBuilder query = new StringBuilder();
+
+      query.append("INSERT INTO block_break_events (event_uuid, player_Id, time, blockType) ");
+      query.append("VALUES (");
+      query.append("  RANDOM_UUID(),");
+      query.append("  SELECT id FROM PLAYERS WHERE name='%s', ");
+      query.append("  '%s', ");
+      query.append("  '%s' ");
+      query.append(");");
+      
+      String playersName = null;
+      String time = getIsoTime();
+      String blockType = event.getBlock().getType().toString();
+      
+      if(event.getPlayer() != null) {
+         playersName = event.getPlayer().getName();
+         time = getIsoTime();
+      }
+      
+      String querySql = String.format(query.toString(), playersName, time, blockType);
+
+      stmt = connection.createStatement();
+
+      stmt.executeUpdate(querySql);
+
+      stmt.close();
    }
 }

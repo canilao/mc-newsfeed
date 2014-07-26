@@ -14,6 +14,7 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.maylincraft.newsfeed.listeners.BlockBreakListener;
 import org.maylincraft.newsfeed.listeners.LoginListener;
 import org.maylincraft.newsfeed.listeners.McmmoXpGainListener;
 import org.maylincraft.newsfeed.listeners.PlayerDeathListener;
@@ -116,6 +117,8 @@ public class NewsFeedPlugin extends JavaPlugin {
             new McmmoXpGainListener(this), this);
       getServer().getPluginManager().registerEvents(
             new PlayerDeathListener(this), this);
+      getServer().getPluginManager().registerEvents(
+            new BlockBreakListener(this), this);
    }
 
    private void startWebServer() throws Exception {
