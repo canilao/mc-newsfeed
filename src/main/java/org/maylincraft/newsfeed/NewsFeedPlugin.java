@@ -18,6 +18,7 @@ import org.maylincraft.newsfeed.listeners.LoginListener;
 import org.maylincraft.newsfeed.listeners.McmmoXpGainListener;
 import org.maylincraft.newsfeed.listeners.PlayerDeathListener;
 import org.maylincraft.newsfeed.data.McmmoFullStats;
+import org.maylincraft.newsfeed.database.Database;
 
 ;
 

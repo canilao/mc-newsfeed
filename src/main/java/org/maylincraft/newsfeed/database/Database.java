@@ -1,4 +1,4 @@
-package org.maylincraft.newsfeed;
+package org.maylincraft.newsfeed.database;
 
 import java.sql.Connection;
 import java.sql.Driver;

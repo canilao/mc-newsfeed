@@ -6,8 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.maylincraft.newsfeed.Database;
 import org.maylincraft.newsfeed.NewsFeedPlugin;
+import org.maylincraft.newsfeed.database.Database;
 
 public class LoginListener implements Listener {
 
