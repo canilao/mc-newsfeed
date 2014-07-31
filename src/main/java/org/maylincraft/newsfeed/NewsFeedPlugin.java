@@ -9,10 +9,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -78,6 +80,26 @@ public class NewsFeedPlugin extends JavaPlugin {
       } catch (Exception e) {
          logSevere("Failed to initialize webserver: ", e);
       }
+
+      // Start scheduled tasks.
+      startSchedulers();
+   }
+
+   private void startSchedulers() {
+      final long fifteenMinutes = 20L * 60L * 15L;
+      BukkitScheduler scheduler = Bukkit.getServer().getScheduler();    
+      scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
+         public void run() {
+            try {
+               getNewsFeedDatabase().runNewsFinder();
+            } catch (IOException e) {
+               logWarning("Failed to initialize run News Finder: ", e);
+               e.printStackTrace();
+            } catch (SQLException e) {
+               logWarning("Failed to initialize run News Finder: ", e);
+            }
+         }
+      }, 0L, fifteenMinutes);
    }
 
    private void createDirectoryStructure() {
@@ -223,8 +245,7 @@ public class NewsFeedPlugin extends JavaPlugin {
             "/newsfeed");
 
       ContextHandlerCollection contexts = new ContextHandlerCollection();
-      contexts.setHandlers(new Handler[] { context,
-            helloContextHandler });
+      contexts.setHandlers(new Handler[] { context, helloContextHandler });
 
       server.setHandler(contexts);
 

@@ -1,5 +1,9 @@
 package org.maylincraft.newsfeed.database;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -23,7 +27,7 @@ public class Database {
 
    public static final String driver = "org.h2.Driver";
    public static final String connectionStr = "jdbc:h2:./plugins/newsfeed/db/newsfeed.db";
-   
+
    private JdbcConnectionPool connPool = null;
 
    static public String getIsoTime() {
@@ -47,18 +51,17 @@ public class Database {
          IllegalAccessException, ClassNotFoundException, SQLException {
       Driver drvr = (Driver) Class.forName(driver).newInstance();
       DriverManager.registerDriver(drvr);
-      
+
       connPool = JdbcConnectionPool.create(connectionStr, "sa", "password");
-      
    }
 
-   public void close() throws SQLException {     
+   public void close() throws SQLException {
       connPool.dispose();
    }
 
-   public void insertPlayerLogin(String name, String time) throws SQLException {    
+   public void insertPlayerLogin(String name, String time) throws SQLException {
       Connection connection = connPool.getConnection();
-      
+
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
@@ -80,13 +83,13 @@ public class Database {
 
       stmt.executeUpdate(querySql);
 
-      stmt.close();      
+      stmt.close();
       connection.close();
    }
 
    public void insertPlayerQuit(String name, String time) throws SQLException {
       Connection connection = connPool.getConnection();
-      
+
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
@@ -108,7 +111,7 @@ public class Database {
    public void insertMcmmoSkillEvent(McMMOPlayerLevelUpEvent event)
          throws Exception {
       Connection connection = connPool.getConnection();
-      
+
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
@@ -129,7 +132,7 @@ public class Database {
 
    public int getPlayerId(String name) throws Exception {
       Connection connection = connPool.getConnection();
-      
+
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
@@ -161,92 +164,12 @@ public class Database {
    }
 
    private void createTables() throws SQLException {
-      createPlayersTable();
-      createLoginTable();
-      createMcmmoLevelUpEventTable();
-      createPlayerDeathTable();
-      createDiamonOreBreakTable();
-   }
-
-   private void createMcmmoLevelUpEventTable() throws SQLException {
       Connection connection = connPool.getConnection();
-      
+
       PreparedStatement stmt;
       StringBuilder query = new StringBuilder();
 
-      query.append("CREATE TABLE IF NOT EXISTS mcmmo_levelup_events (");
-      query.append("id INTEGER IDENTITY,");
-      query.append("event_uuid UUID,");
-      query.append("player_Id INT,");
-      query.append("time TIMESTAMP,");
-      query.append("skill_type VARCHAR(20),");
-      query.append("level INT");
-      query.append(");");
-
-      stmt = connection.prepareStatement(query.toString());
-
-      stmt.executeUpdate();
-
-      stmt.close();
-      connection.close();
-   }
-
-   private void createPlayersTable() throws SQLException {
-      Connection connection = connPool.getConnection();
-      
-      PreparedStatement stmt;
-      StringBuilder query = new StringBuilder();
-
-      query.append("CREATE TABLE IF NOT EXISTS players (");
-      query.append("id INTEGER IDENTITY,");
-      query.append("name VARCHAR(16) UNIQUE");
-      query.append(");");
-
-      stmt = connection.prepareStatement(query.toString());
-
-      stmt.executeUpdate();
-
-      stmt.close();
-      connection.close();
-   }
-
-   private void createLoginTable() throws SQLException {
-      Connection connection = connPool.getConnection();
-      
-      PreparedStatement stmt;
-      StringBuilder query = new StringBuilder();
-
-      query.append("CREATE TABLE IF NOT EXISTS logins (");
-      query.append("id BIGINT IDENTITY,");
-      query.append("player_Id INT,");
-      query.append("action VARCHAR(10),");
-      query.append("time TIMESTAMP");
-      query.append(");");
-
-      stmt = connection.prepareStatement(query.toString());
-
-      stmt.executeUpdate();
-
-      stmt.close();
-      connection.close();
-   }
-
-   private void createPlayerDeathTable() throws SQLException {
-      Connection connection = connPool.getConnection();
-      
-      PreparedStatement stmt;
-      StringBuilder query = new StringBuilder();
-
-      query.append("CREATE TABLE IF NOT EXISTS player_death_events (");
-      query.append("  id INTEGER IDENTITY,");
-      query.append("  event_uuid UUID,");
-      query.append("  player_Id INT,");
-      query.append("  time TIMESTAMP,");
-      query.append("  killers_name VARCHAR(20),");
-      query.append("  cause_of_death VARCHAR(30),");
-      query.append("  death_message VARCHAR(100),");
-      query.append("  weapon_used VARCHAR(40),");
-      query.append(");");
+      query.append("RUNSCRIPT FROM 'classpath:/org/maylincraft/newsfeed/database/scripts/CreateTables.sql'");
 
       stmt = connection.prepareStatement(query.toString());
 
@@ -258,7 +181,7 @@ public class Database {
 
    public void insertRecordNewPlayer(String name) throws SQLException {
       Connection connection = connPool.getConnection();
-      
+
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
@@ -276,7 +199,7 @@ public class Database {
 
    public void insertPlayerDeath(PlayerDeathEvent event) throws SQLException {
       Connection connection = connPool.getConnection();
-      
+
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
@@ -347,31 +270,9 @@ public class Database {
       return "'" + text + "'";
    }
 
-   private void createDiamonOreBreakTable() throws SQLException {
-      Connection connection = connPool.getConnection();
-      
-      PreparedStatement stmt;
-      StringBuilder query = new StringBuilder();
-
-      query.append("CREATE TABLE IF NOT EXISTS block_break_events (");
-      query.append("  id INTEGER IDENTITY,");
-      query.append("  event_uuid UUID,");
-      query.append("  player_Id INT,");
-      query.append("  time TIMESTAMP,");
-      query.append("  blockType VARCHAR(40)");
-      query.append(");");
-
-      stmt = connection.prepareStatement(query.toString());
-
-      stmt.executeUpdate();
-
-      stmt.close();
-      connection.close();
-   }
-   
    public void insertDiamondOreBreak(BlockBreakEvent event) throws SQLException {
       Connection connection = connPool.getConnection();
-      
+
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
@@ -382,21 +283,58 @@ public class Database {
       query.append("  '%s', ");
       query.append("  '%s' ");
       query.append(");");
-      
+
       String playersName = null;
       String time = getIsoTime();
       String blockType = event.getBlock().getType().toString();
-      
-      if(event.getPlayer() != null) {
+
+      if (event.getPlayer() != null) {
          playersName = event.getPlayer().getName();
          time = getIsoTime();
       }
-      
-      String querySql = String.format(query.toString(), playersName, time, blockType);
+
+      String querySql = String.format(query.toString(), playersName, time,
+            blockType);
 
       stmt = connection.createStatement();
 
       stmt.executeUpdate(querySql);
+
+      stmt.close();
+      connection.close();
+   }
+
+   public void runNewsFinder() throws IOException, SQLException {
+
+      final String script = "/org/maylincraft/newsfeed/database/scripts/formatted/LoginNewsFinder.sql";
+
+      Connection connection = connPool.getConnection();
+      Statement stmt = null;
+      InputStream stream = Database.class.getResourceAsStream(script);
+      BufferedReader in = new BufferedReader(new InputStreamReader(stream));
+      StringBuilder query = new StringBuilder();
+      String line;
+
+      while ((line = in.readLine()) != null) {
+         query.append(line);
+         query.append(System.getProperty("line.separator"));
+      }
+
+      in.close();
+
+      // Parameters for the script.
+      int playerId = 3;
+      // 2 hours.
+      int timeThreshold = 2;
+      // Unit of time for the threshold.
+      String unitOftime = "HOUR";
+
+      String querySql = String.format(query.toString(), playerId,
+            timeThreshold, unitOftime);
+
+      stmt = connection.createStatement();
+
+      stmt.execute(querySql);
 
       stmt.close();
       connection.close();
