@@ -15,15 +15,16 @@ import java.util.TimeZone;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.h2.jdbcx.JdbcConnectionPool;
 
 import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
 
 public class Database {
 
    public static final String driver = "org.h2.Driver";
-   public static final String connectionStr = "jdbc:h2:./plugins/newsfeed/db/newsfeed.db;USER=sa;PASSWORD=password";
-
-   private Connection connection = null;
+   public static final String connectionStr = "jdbc:h2:./plugins/newsfeed/db/newsfeed.db";
+   
+   private JdbcConnectionPool connPool = null;
 
    static public String getIsoTime() {
       TimeZone tz = TimeZone.getTimeZone("UTC");
@@ -46,14 +47,18 @@ public class Database {
          IllegalAccessException, ClassNotFoundException, SQLException {
       Driver drvr = (Driver) Class.forName(driver).newInstance();
       DriverManager.registerDriver(drvr);
-      connection = DriverManager.getConnection(connectionStr);
+      
+      connPool = JdbcConnectionPool.create(connectionStr, "sa", "password");
+      
    }
 
-   public void close() throws SQLException {
-      connection.close();
+   public void close() throws SQLException {     
+      connPool.dispose();
    }
 
-   public void insertPlayerLogin(String name, String time) throws SQLException {
+   public void insertPlayerLogin(String name, String time) throws SQLException {    
+      Connection connection = connPool.getConnection();
+      
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
@@ -75,10 +80,13 @@ public class Database {
 
       stmt.executeUpdate(querySql);
 
-      stmt.close();
+      stmt.close();      
+      connection.close();
    }
 
    public void insertPlayerQuit(String name, String time) throws SQLException {
+      Connection connection = connPool.getConnection();
+      
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
@@ -94,10 +102,13 @@ public class Database {
       stmt.executeUpdate(querySql);
 
       stmt.close();
+      connection.close();
    }
 
    public void insertMcmmoSkillEvent(McMMOPlayerLevelUpEvent event)
          throws Exception {
+      Connection connection = connPool.getConnection();
+      
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
@@ -113,9 +124,12 @@ public class Database {
       stmt.executeUpdate(querySql);
 
       stmt.close();
+      connection.close();
    }
 
    public int getPlayerId(String name) throws Exception {
+      Connection connection = connPool.getConnection();
+      
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
@@ -141,6 +155,7 @@ public class Database {
       }
 
       stmt.close();
+      connection.close();
 
       return playerId;
    }
@@ -154,6 +169,8 @@ public class Database {
    }
 
    private void createMcmmoLevelUpEventTable() throws SQLException {
+      Connection connection = connPool.getConnection();
+      
       PreparedStatement stmt;
       StringBuilder query = new StringBuilder();
 
@@ -171,9 +188,12 @@ public class Database {
       stmt.executeUpdate();
 
       stmt.close();
+      connection.close();
    }
 
    private void createPlayersTable() throws SQLException {
+      Connection connection = connPool.getConnection();
+      
       PreparedStatement stmt;
       StringBuilder query = new StringBuilder();
 
@@ -187,9 +207,12 @@ public class Database {
       stmt.executeUpdate();
 
       stmt.close();
+      connection.close();
    }
 
    private void createLoginTable() throws SQLException {
+      Connection connection = connPool.getConnection();
+      
       PreparedStatement stmt;
       StringBuilder query = new StringBuilder();
 
@@ -205,9 +228,12 @@ public class Database {
       stmt.executeUpdate();
 
       stmt.close();
+      connection.close();
    }
 
    private void createPlayerDeathTable() throws SQLException {
+      Connection connection = connPool.getConnection();
+      
       PreparedStatement stmt;
       StringBuilder query = new StringBuilder();
 
@@ -227,9 +253,12 @@ public class Database {
       stmt.executeUpdate();
 
       stmt.close();
+      connection.close();
    }
 
    public void insertRecordNewPlayer(String name) throws SQLException {
+      Connection connection = connPool.getConnection();
+      
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
@@ -242,9 +271,12 @@ public class Database {
       stmt.executeUpdate(querySql);
 
       stmt.close();
+      connection.close();
    }
 
    public void insertPlayerDeath(PlayerDeathEvent event) throws SQLException {
+      Connection connection = connPool.getConnection();
+      
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
@@ -308,6 +340,7 @@ public class Database {
       stmt.executeUpdate(querySql);
 
       stmt.close();
+      connection.close();
    }
 
    private String surroundQuotes(String text) {
@@ -315,6 +348,8 @@ public class Database {
    }
 
    private void createDiamonOreBreakTable() throws SQLException {
+      Connection connection = connPool.getConnection();
+      
       PreparedStatement stmt;
       StringBuilder query = new StringBuilder();
 
@@ -331,9 +366,12 @@ public class Database {
       stmt.executeUpdate();
 
       stmt.close();
+      connection.close();
    }
    
    public void insertDiamondOreBreak(BlockBreakEvent event) throws SQLException {
+      Connection connection = connPool.getConnection();
+      
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
@@ -361,5 +399,6 @@ public class Database {
       stmt.executeUpdate(querySql);
 
       stmt.close();
+      connection.close();
    }
 }
