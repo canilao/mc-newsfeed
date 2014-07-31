@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -314,6 +315,7 @@ public class Database {
       BufferedReader in = new BufferedReader(new InputStreamReader(stream));
       StringBuilder query = new StringBuilder();
       String line;
+      ArrayList<Integer> playerIdArray = new ArrayList<Integer>();
 
       while ((line = in.readLine()) != null) {
          query.append(line);
@@ -322,19 +324,34 @@ public class Database {
 
       in.close();
 
-      // Parameters for the script.
-      int playerId = 3;
-      // 2 hours.
-      int timeThreshold = 2;
-      // Unit of time for the threshold.
-      String unitOftime = "HOUR";
+      // Get the player ids that we need to use to run the new finder.
+      StringBuilder queryIds = new StringBuilder();
 
-      String querySql = String.format(query.toString(), playerId,
-            timeThreshold, unitOftime);
+      queryIds.append("SELECT DISTINCT(id) FROM players;");
+      Statement stmtIds = connection.createStatement();
+      ResultSet rs = stmtIds.executeQuery(queryIds.toString());
 
-      stmt = connection.createStatement();
+      while (rs.next()) {
+         playerIdArray.add(rs.getInt("id"));
+      }
 
-      stmt.execute(querySql);
+      stmtIds.close();
+
+      // Run the news for each player.
+      for (Integer playerId : playerIdArray) {
+
+         // 2 hours.
+         int timeThreshold = 2;
+         // Unit of time for the threshold.
+         String unitOftime = "HOUR";
+
+         String querySql = String.format(query.toString(), playerId,
+               timeThreshold, unitOftime);
+
+         stmt = connection.createStatement();
+
+         stmt.execute(querySql);
+      }
 
       stmt.close();
       connection.close();
