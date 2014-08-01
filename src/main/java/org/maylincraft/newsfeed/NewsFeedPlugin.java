@@ -22,6 +22,7 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.maylincraft.newsfeed.data.McmmoFullStats;
+import org.maylincraft.newsfeed.data.NewsFeed;
 import org.maylincraft.newsfeed.database.Database;
 import org.maylincraft.newsfeed.listeners.BlockBreakListener;
 import org.maylincraft.newsfeed.listeners.LoginListener;
@@ -37,6 +38,10 @@ public class NewsFeedPlugin extends JavaPlugin {
 
    public static Database getNewsFeedDatabase() {
       return db;
+   }
+   
+   public static NewsFeedPlugin getInstance() {
+      return thePlugin;
    }
 
    public static void logSevere(String msg, Exception e) {
@@ -241,7 +246,7 @@ public class NewsFeedPlugin extends JavaPlugin {
       helloContextHandler.setContextPath("/data");
       helloContextHandler.addServlet(new ServletHolder(new McmmoFullStats()),
             "/fullstats");
-      helloContextHandler.addServlet(new ServletHolder(new McmmoFullStats()),
+      helloContextHandler.addServlet(new ServletHolder(new NewsFeed()),
             "/newsfeed");
 
       ContextHandlerCollection contexts = new ContextHandlerCollection();

@@ -21,6 +21,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.h2.jdbcx.JdbcConnectionPool;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.maylincraft.newsfeed.NewsFeedPlugin;
 
 import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
 
@@ -178,6 +181,45 @@ public class Database {
 
       stmt.close();
       connection.close();
+   }
+
+   @SuppressWarnings("unchecked")
+   public JSONArray getNewsFeed() throws SQLException {
+      Connection connection = connPool.getConnection();
+      ResultSet rs;
+      JSONObject jsonObj = new JSONObject();
+      JSONArray jsonArray = new JSONArray();
+
+      PreparedStatement stmt;
+      StringBuilder query = new StringBuilder();
+
+      query.append("SELECT * FROM login_news ORDER BY login_time DESC;");
+
+      stmt = connection.prepareStatement(query.toString());
+
+      rs = stmt.executeQuery();
+
+      try {
+         while (rs.next()) {
+            jsonObj.put("player_id", rs.getInt("player_id"));
+            jsonObj.put("name", rs.getString("name"));
+            jsonObj.put("group_label", rs.getInt("group_label"));
+            jsonObj.put("login_time", rs.getTimestamp("login_time"));
+            jsonObj.put("logout_time", rs.getTimestamp("logout_time"));
+            jsonObj.put("last_action", rs.getString("last_action"));
+            jsonObj.put("last_action", rs.getString("play_time_minutes"));
+            jsonArray.add(jsonObj);
+         }
+
+      } catch (SQLException e) {
+         NewsFeedPlugin.logWarning(
+               "Failed to generate news feed for web request", e);
+      }
+
+      stmt.close();
+      connection.close();
+
+      return jsonArray;
    }
 
    public void insertRecordNewPlayer(String name) throws SQLException {
