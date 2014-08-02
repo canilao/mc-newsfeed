@@ -184,42 +184,40 @@ public class Database {
    }
 
    @SuppressWarnings("unchecked")
-   public JSONArray getNewsFeed(int startIndex, int endIndex) throws SQLException {
+   public JSONArray getNewsFeed(int startIndex, int endIndex) throws SQLException, IOException {
+      
+      final String script = "/scripts/SelectNews.sql";
+
       Connection connection = connPool.getConnection();
+      Statement stmt = null;
+      InputStream stream = Database.class.getResourceAsStream(script);
+      BufferedReader in = new BufferedReader(new InputStreamReader(stream));
+      StringBuilder query = new StringBuilder();
+      String line;
+
+      while ((line = in.readLine()) != null) {
+         query.append(line);
+         query.append(System.getProperty("line.separator"));
+      }
+
+      in.close();
+      
       ResultSet rs;
       JSONObject jsonObj = new JSONObject();
       JSONArray jsonArray = new JSONArray();
 
-      PreparedStatement stmt;
-      StringBuilder query = new StringBuilder();
+      stmt = connection.createStatement();
 
-      query.append("SELECT * ");
-      query.append("FROM(");
-      query.append("    SELECT ROWNUM() as index, * ");
-      query.append("    FROM (");
-      query.append("        SELECT * ");
-      query.append("        FROM login_news ");
-      query.append("        ORDER BY login_time DESC");
-      query.append("    )");
-      query.append(") ");
-      query.append("WHERE index >= " + Integer.toString(startIndex) + "AND index < " + Integer.toString(endIndex) + ";");
-
-      stmt = connection.prepareStatement(query.toString());
-
-      rs = stmt.executeQuery();
+      rs = stmt.executeQuery(query.toString());
 
       try {
          while (rs.next()) {
             // Create a JSONObject for this user.
             jsonObj = new JSONObject();
             
-            jsonObj.put("player_id", rs.getInt("player_id"));
-            jsonObj.put("name", rs.getString("name"));
-            jsonObj.put("group_label", rs.getInt("group_label"));
-            jsonObj.put("login_time", rs.getTimestamp("login_time") + "Z");
-            jsonObj.put("logout_time", rs.getTimestamp("logout_time") + "Z");
-            jsonObj.put("last_action", rs.getString("last_action"));
-            jsonObj.put("play_time_minutes", rs.getString("play_time_minutes"));
+            jsonObj.put("type", rs.getString("type"));
+            jsonObj.put("event_uuid", rs.getString("event_uuid"));
+            jsonObj.put("time", rs.getTimestamp("time"));
             jsonArray.add(jsonObj);
          }
 
@@ -359,7 +357,7 @@ public class Database {
       connection.close();
    }
 
-   public void runNewsFinder() throws IOException, SQLException {
+   public void runLoginNewsFinder() throws IOException, SQLException {
 
       final String script = "/scripts/formatted/LoginNewsFinder.sql";
 
@@ -398,6 +396,58 @@ public class Database {
          int timeThreshold = 2;
          // Unit of time for the threshold.
          String unitOftime = "HOUR";
+
+         String querySql = String.format(query.toString(), playerId,
+               timeThreshold, unitOftime);
+
+         stmt = connection.createStatement();
+
+         stmt.execute(querySql);
+      }
+
+      stmt.close();
+      connection.close();
+   }
+
+   public void runDiamondNewsFinder() throws IOException, SQLException {
+
+      final String script = "/scripts/formatted/DiamondNewsFinder.sql";
+
+      Connection connection = connPool.getConnection();
+      Statement stmt = null;
+      InputStream stream = Database.class.getResourceAsStream(script);
+      BufferedReader in = new BufferedReader(new InputStreamReader(stream));
+      StringBuilder query = new StringBuilder();
+      String line;
+      ArrayList<Integer> playerIdArray = new ArrayList<Integer>();
+
+      while ((line = in.readLine()) != null) {
+         query.append(line);
+         query.append(System.getProperty("line.separator"));
+      }
+
+      in.close();
+
+      // Get the player ids that we need to use to run the new finder.
+      StringBuilder queryIds = new StringBuilder();
+
+      queryIds.append("SELECT DISTINCT(id) FROM players;");
+      Statement stmtIds = connection.createStatement();
+      ResultSet rs = stmtIds.executeQuery(queryIds.toString());
+
+      while (rs.next()) {
+         playerIdArray.add(rs.getInt("id"));
+      }
+
+      stmtIds.close();
+
+      // Run the news for each player.
+      for (Integer playerId : playerIdArray) {
+
+         // 2 hours.
+         int timeThreshold = 3;
+         // Unit of time for the threshold.
+         String unitOftime = "MINUTE";
 
          String querySql = String.format(query.toString(), playerId,
                timeThreshold, unitOftime);

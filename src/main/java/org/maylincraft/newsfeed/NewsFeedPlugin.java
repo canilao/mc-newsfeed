@@ -96,7 +96,8 @@ public class NewsFeedPlugin extends JavaPlugin {
       scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
          public void run() {
             try {
-               getNewsFeedDatabase().runNewsFinder();
+               getNewsFeedDatabase().runLoginNewsFinder();
+               getNewsFeedDatabase().runDiamondNewsFinder();
             } catch (IOException e) {
                logWarning("Failed to initialize run News Finder: ", e);
                e.printStackTrace();

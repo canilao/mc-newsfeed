@@ -55,3 +55,15 @@ CREATE TABLE IF NOT EXISTS
         last_action VARCHAR(10),
         play_time_minutes INT
 );
+
+-- Create the diamond break news table.
+CREATE TABLE IF NOT EXISTS
+    diamond_break_news (
+        event_uuid UUID,
+        block_count INT,
+        player_id INT,
+        name VARCHAR(16),
+        time TIMESTAMP,
+        block_type VARCHAR(40),
+        group_label INT
+);
