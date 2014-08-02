@@ -11,11 +11,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.UUID;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -184,40 +186,56 @@ public class Database {
    }
 
    @SuppressWarnings("unchecked")
-   public JSONArray getNewsFeed(int startIndex, int endIndex) throws SQLException, IOException {
-      
-      final String script = "/scripts/SelectNews.sql";
+   public JSONArray getNewsFeed(int startIndex, int endIndex)
+         throws SQLException, IOException {
+
+      final String script = "/scripts/formatted/SelectNews.sql";
 
       Connection connection = connPool.getConnection();
       Statement stmt = null;
       InputStream stream = Database.class.getResourceAsStream(script);
       BufferedReader in = new BufferedReader(new InputStreamReader(stream));
-      StringBuilder query = new StringBuilder();
+      StringBuilder queryFormat = new StringBuilder();
       String line;
 
       while ((line = in.readLine()) != null) {
-         query.append(line);
-         query.append(System.getProperty("line.separator"));
+         queryFormat.append(line);
+         queryFormat.append(System.getProperty("line.separator"));
       }
 
       in.close();
-      
+
+      String querySql = String.format(queryFormat.toString(), startIndex,
+            endIndex);
+
       ResultSet rs;
       JSONObject jsonObj = new JSONObject();
       JSONArray jsonArray = new JSONArray();
 
       stmt = connection.createStatement();
 
-      rs = stmt.executeQuery(query.toString());
+      rs = stmt.executeQuery(querySql);
+
+      String newsType;
+      UUID newsUUID;
+      Timestamp newsTimestamp;
 
       try {
          while (rs.next()) {
-            // Create a JSONObject for this user.
-            jsonObj = new JSONObject();
-            
-            jsonObj.put("type", rs.getString("type"));
-            jsonObj.put("event_uuid", rs.getString("event_uuid"));
-            jsonObj.put("time", rs.getTimestamp("time"));
+            newsType = rs.getString("type");
+            newsUUID = UUID.fromString(rs.getString("event_uuid"));
+            newsTimestamp = rs.getTimestamp("time");
+
+            if (newsType.equals("login")) {
+               jsonObj = selectLoginNews(newsUUID, newsTimestamp);
+            } else if (newsType.equals("death")) {
+               jsonObj = selectDeathNews(newsUUID, newsTimestamp);
+            } else if (newsType.equals("mcmmo_levelup")) {
+               jsonObj = selectMcmmoLevelUpNews(newsUUID, newsTimestamp);
+            } else if (newsType.equals("diamond_break")) {
+               jsonObj = selectDiamondBreakNews(newsUUID, newsTimestamp);
+            }
+
             jsonArray.add(jsonObj);
          }
 
@@ -230,6 +248,155 @@ public class Database {
       connection.close();
 
       return jsonArray;
+   }
+
+   @SuppressWarnings("unchecked")
+   private JSONObject selectDiamondBreakNews(UUID newsUUID,
+         Timestamp newsTimestamp) throws SQLException {
+      JSONObject jsonObj = new JSONObject();
+
+      Connection connection = connPool.getConnection();
+
+      Statement stmt = null;
+      StringBuilder query = new StringBuilder();
+
+      query.append("SELECT block_count, name, time, block_type ");
+      query.append("FROM diamond_break_news ");
+      query.append("WHERE event_uuid='%s'");
+      query.append(";");
+
+      String querySql = String.format(query.toString(), newsUUID.toString());
+
+      stmt = connection.createStatement();
+
+      ResultSet rs = stmt.executeQuery(querySql);
+
+      while (rs.next()) {
+         jsonObj.put("news_type", "diamond_break");
+         jsonObj.put("block_count", rs.getInt("block_count"));
+         jsonObj.put("name", rs.getString("name"));
+         jsonObj.put("time", rs.getTimestamp("time") + "Z");
+         jsonObj.put("block_type", rs.getString("block_type"));
+      }
+
+      stmt.close();
+      connection.close();
+
+      return jsonObj;
+   }
+
+   @SuppressWarnings("unchecked")
+   private JSONObject selectMcmmoLevelUpNews(UUID newsUUID,
+         Timestamp newsTimestamp) throws SQLException {
+      JSONObject jsonObj = new JSONObject();
+
+      Connection connection = connPool.getConnection();
+
+      Statement stmt = null;
+      StringBuilder query = new StringBuilder();
+
+      query.append("SELECT a.player_id, b.name, a.time, a.skill_type, a.level ");
+      query.append("FROM mcmmo_levelup_events a ");
+      query.append("JOIN players b ON a.player_id=b.id ");
+      query.append("WHERE event_uuid='%s'");
+      query.append(";");
+
+      String querySql = String.format(query.toString(), newsUUID.toString());
+
+      stmt = connection.createStatement();
+
+      ResultSet rs = stmt.executeQuery(querySql);
+
+      while (rs.next()) {
+         jsonObj.put("news_type", "mcmmo_levelup");
+         jsonObj.put("player_id", rs.getInt("player_id"));
+         jsonObj.put("name", rs.getString("name"));
+         jsonObj.put("time", rs.getTimestamp("time") + "Z");
+         jsonObj.put("skill_type", rs.getString("skill_type"));
+         jsonObj.put("level", rs.getInt("level"));
+      }
+
+      stmt.close();
+      connection.close();
+
+      return jsonObj;
+   }
+
+   @SuppressWarnings("unchecked")
+   private JSONObject selectDeathNews(UUID newsUUID, Timestamp newsTimestamp)
+         throws SQLException {
+      JSONObject jsonObj = new JSONObject();
+
+      Connection connection = connPool.getConnection();
+
+      Statement stmt = null;
+      StringBuilder query = new StringBuilder();
+
+      query.append("SELECT a.player_id, b.name, a.time, a.killers_name, a.cause_of_death, a.death_message, a.weapon_used ");
+      query.append("FROM player_death_events a ");
+      query.append("JOIN players b ON a.player_id=b.id ");
+      query.append("WHERE event_uuid='%s'");
+      query.append(";");
+
+      String querySql = String.format(query.toString(), newsUUID.toString());
+
+      stmt = connection.createStatement();
+
+      ResultSet rs = stmt.executeQuery(querySql);
+
+      while (rs.next()) {
+         jsonObj.put("news_type", "death");
+         jsonObj.put("player_id", rs.getInt("player_id"));
+         jsonObj.put("name", rs.getString("name"));
+         jsonObj.put("time", rs.getTimestamp("time") + "Z");
+         jsonObj.put("killers_name", rs.getString("killers_name"));
+         jsonObj.put("cause_of_death", rs.getString("cause_of_death"));
+         jsonObj.put("death_message", rs.getString("death_message"));
+         jsonObj.put("weapon_used", rs.getString("weapon_used"));
+      }
+
+      stmt.close();
+      connection.close();
+
+      return jsonObj;
+   }
+
+   @SuppressWarnings("unchecked")
+   private JSONObject selectLoginNews(UUID newsUUID, Timestamp newsTimestamp)
+         throws SQLException {
+      JSONObject jsonObj = new JSONObject();
+
+      Connection connection = connPool.getConnection();
+
+      Statement stmt = null;
+      StringBuilder query = new StringBuilder();
+
+      query.append("SELECT player_id, name, group_label, login_time, logout_time, last_action, play_time_minutes ");
+      query.append("FROM login_news ");
+      query.append("WHERE event_uuid='%s'");
+      query.append(";");
+
+      String querySql = String.format(query.toString(), newsUUID.toString());
+
+      stmt = connection.createStatement();
+
+      ResultSet rs = stmt.executeQuery(querySql);
+
+      while (rs.next()) {
+         jsonObj.put("news_type", "login");
+         jsonObj.put("player_id", rs.getInt("player_id"));
+         jsonObj.put("name", rs.getString("name"));
+         jsonObj.put("group_label", rs.getInt("group_label"));
+         jsonObj.put("login_time", rs.getTimestamp("login_time") + "Z");
+         jsonObj.put("logout_time", rs.getTimestamp("logout_time") + "Z");
+         jsonObj.put("last_action", rs.getString("last_action"));
+         jsonObj.put("last_action", rs.getString("play_time_minutes"));
+      }
+
+      stmt.close();
+      connection.close();
+
+      return jsonObj;
    }
 
    public void insertRecordNewPlayer(String name) throws SQLException {
