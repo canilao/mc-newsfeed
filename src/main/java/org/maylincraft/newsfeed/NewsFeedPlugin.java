@@ -39,7 +39,7 @@ public class NewsFeedPlugin extends JavaPlugin {
    public static Database getNewsFeedDatabase() {
       return db;
    }
-   
+
    public static NewsFeedPlugin getInstance() {
       return thePlugin;
    }
@@ -92,7 +92,7 @@ public class NewsFeedPlugin extends JavaPlugin {
 
    private void startSchedulers() {
       final long fifteenMinutes = 20L * 60L * 15L;
-      BukkitScheduler scheduler = Bukkit.getServer().getScheduler();    
+      BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
       scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
          public void run() {
             try {
@@ -130,6 +130,10 @@ public class NewsFeedPlugin extends JavaPlugin {
       if (!webDir.exists()) {
          success &= webDir.mkdir();
       }
+      webDir = new File("plugins/newsfeed/web/fonts/");
+      if (!webDir.exists()) {
+         success &= webDir.mkdir();
+      }
 
       try {
          if (success) {
@@ -144,6 +148,30 @@ public class NewsFeedPlugin extends JavaPlugin {
                   "plugins/newsfeed/web/js/bootstrap.min.js");
             copyFileFromJar("/web/js/scripts.js",
                   "plugins/newsfeed/web/js/scripts.js");
+            copyFileFromJar("/web/fonts/glyphicons-halflings-regular.eot",
+                  "plugins/newsfeed/web/fonts/glyphicons-halflings-regular.eot");
+            copyFileFromJar("/web/fonts/glyphicons-halflings-regular.svg",
+                  "plugins/newsfeed/web/fonts/glyphicons-halflings-regular.svg");
+            copyFileFromJar("/web/fonts/glyphicons-halflings-regular.ttf",
+                  "plugins/newsfeed/web/fonts/glyphicons-halflings-regular.ttf");
+            copyFileFromJar("/web/fonts/glyphicons-halflings-regular.woff",
+                  "plugins/newsfeed/web/fonts/glyphicons-halflings-regular.woff");
+            copyFileFromJar("/web/css/bootstrap-theme.css",
+                  "plugins/newsfeed/web/css/bootstrap-theme.css");
+            copyFileFromJar("/web/css/bootstrap-theme.css.map",
+                  "plugins/newsfeed/web/css/bootstrap-theme.css.map");
+            copyFileFromJar("/web/css/bootstrap-theme.min.css",
+                  "plugins/newsfeed/web/css/bootstrap-theme.min.css");
+            copyFileFromJar("/web/css/bootstrap.css",
+                  "plugins/newsfeed/web/css/bootstrap.css");
+            copyFileFromJar("/web/css/bootstrap.css.map",
+                  "plugins/newsfeed/web/css/bootstrap.css.map");
+            copyFileFromJar("/web/js/bootstrap.js",
+                  "plugins/newsfeed/web/js/bootstrap.js");
+            copyFileFromJar("/web/js/jquery-2.1.1.js",
+                  "plugins/newsfeed/web/js/jquery-2.1.1.js");
+            copyFileFromJar("/web/js/jquery.timeago.js",
+                  "plugins/newsfeed/web/js/jquery.timeago.js");
          } else {
             throw new IOException();
          }

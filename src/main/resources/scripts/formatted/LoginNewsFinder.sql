@@ -46,10 +46,20 @@ INSERT INTO grouped_rows
     JOIN PLAYERS d on c.player_id=d.id;
 
 -- Get the login and logout time with the time played and put the new rows in the news table.
-MERGE INTO login_news KEY(login_time, name) (
+MERGE INTO login_news (
+    unique_id, 
+    player_id,
+    name,
+    group_label,
+    login_time,
+    logout_time,
+    last_action,
+    play_time_minutes
+) KEY(login_time, name) (
     SELECT *
     FROM (
         SELECT 
+            RANDOM_UUID() AS unique_id,
             a.player_id,
             a.name, 
             a.group_label, 

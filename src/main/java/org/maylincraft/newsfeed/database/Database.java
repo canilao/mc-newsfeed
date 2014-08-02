@@ -173,7 +173,7 @@ public class Database {
       PreparedStatement stmt;
       StringBuilder query = new StringBuilder();
 
-      query.append("RUNSCRIPT FROM 'classpath:/org/maylincraft/newsfeed/database/scripts/CreateTables.sql'");
+      query.append("RUNSCRIPT FROM 'classpath:/scripts/CreateTables.sql'");
 
       stmt = connection.prepareStatement(query.toString());
 
@@ -184,7 +184,7 @@ public class Database {
    }
 
    @SuppressWarnings("unchecked")
-   public JSONArray getNewsFeed() throws SQLException {
+   public JSONArray getNewsFeed(int startIndex, int endIndex) throws SQLException {
       Connection connection = connPool.getConnection();
       ResultSet rs;
       JSONObject jsonObj = new JSONObject();
@@ -193,7 +193,16 @@ public class Database {
       PreparedStatement stmt;
       StringBuilder query = new StringBuilder();
 
-      query.append("SELECT * FROM login_news ORDER BY login_time DESC;");
+      query.append("SELECT * ");
+      query.append("FROM(");
+      query.append("    SELECT ROWNUM() as index, * ");
+      query.append("    FROM (");
+      query.append("        SELECT * ");
+      query.append("        FROM login_news ");
+      query.append("        ORDER BY login_time");
+      query.append("    )");
+      query.append(") ");
+      query.append("WHERE index >= " + Integer.toString(startIndex) + "AND index < " + Integer.toString(endIndex) + ";");
 
       stmt = connection.prepareStatement(query.toString());
 
@@ -201,13 +210,16 @@ public class Database {
 
       try {
          while (rs.next()) {
+            // Create a JSONObject for this user.
+            jsonObj = new JSONObject();
+            
             jsonObj.put("player_id", rs.getInt("player_id"));
             jsonObj.put("name", rs.getString("name"));
             jsonObj.put("group_label", rs.getInt("group_label"));
-            jsonObj.put("login_time", rs.getTimestamp("login_time"));
-            jsonObj.put("logout_time", rs.getTimestamp("logout_time"));
+            jsonObj.put("login_time", rs.getTimestamp("login_time") + "Z");
+            jsonObj.put("logout_time", "\"" + rs.getTimestamp("logout_time") + "\""  + "Z");
             jsonObj.put("last_action", rs.getString("last_action"));
-            jsonObj.put("last_action", rs.getString("play_time_minutes"));
+            jsonObj.put("play_time_minutes", rs.getString("play_time_minutes"));
             jsonArray.add(jsonObj);
          }
 
@@ -349,7 +361,7 @@ public class Database {
 
    public void runNewsFinder() throws IOException, SQLException {
 
-      final String script = "/org/maylincraft/newsfeed/database/scripts/formatted/LoginNewsFinder.sql";
+      final String script = "/scripts/formatted/LoginNewsFinder.sql";
 
       Connection connection = connPool.getConnection();
       Statement stmt = null;
