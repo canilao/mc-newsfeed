@@ -47,7 +47,7 @@ INSERT INTO grouped_rows
 
 -- Get the login and logout time with the time played and put the new rows in the news table.
 MERGE INTO login_news (
-    unique_id, 
+    event_uuid,
     player_id,
     name,
     group_label,
@@ -59,7 +59,7 @@ MERGE INTO login_news (
     SELECT *
     FROM (
         SELECT 
-            RANDOM_UUID() AS unique_id,
+            RANDOM_UUID() AS event_uuid,
             a.player_id,
             a.name, 
             a.group_label, 
