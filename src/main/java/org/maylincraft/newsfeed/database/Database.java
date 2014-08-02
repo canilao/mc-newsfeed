@@ -217,7 +217,7 @@ public class Database {
             jsonObj.put("name", rs.getString("name"));
             jsonObj.put("group_label", rs.getInt("group_label"));
             jsonObj.put("login_time", rs.getTimestamp("login_time") + "Z");
-            jsonObj.put("logout_time", "\"" + rs.getTimestamp("logout_time") + "\""  + "Z");
+            jsonObj.put("logout_time", rs.getTimestamp("logout_time") + "Z");
             jsonObj.put("last_action", rs.getString("last_action"));
             jsonObj.put("play_time_minutes", rs.getString("play_time_minutes"));
             jsonArray.add(jsonObj);
