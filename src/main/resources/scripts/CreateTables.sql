@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS block_break_events (
 -- Create the login news table.
 CREATE TABLE IF NOT EXISTS
     login_news (
-        unique_id UUID,
+        event_uuid UUID,
         player_id INT,
         name VARCHAR(16),
         group_label INT,
