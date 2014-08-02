@@ -199,7 +199,7 @@ public class Database {
       query.append("    FROM (");
       query.append("        SELECT * ");
       query.append("        FROM login_news ");
-      query.append("        ORDER BY login_time");
+      query.append("        ORDER BY login_time DESC");
       query.append("    )");
       query.append(") ");
       query.append("WHERE index >= " + Integer.toString(startIndex) + "AND index < " + Integer.toString(endIndex) + ";");
