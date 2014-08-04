@@ -11,6 +11,44 @@
         <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
         <link href="css/styles.css" rel="stylesheet">
+        <style>
+            .nf-login-heading {
+                background: -webkit-linear-gradient(#5ad137, black); /* For Safari 5.1 to 6.0 */
+                background: -o-linear-gradient(#5ad137, black); /* For Opera 11.1 to 12.0 */
+                background: -moz-linear-gradient(#5ad137, black); /* For Firefox 3.6 to 15 */
+                background: linear-gradient(#5ad137, black); /* Standard syntax */
+            }
+
+            .nf-death-heading {
+                background: -webkit-linear-gradient(red, black); /* For Safari 5.1 to 6.0 */
+                background: -o-linear-gradient(red, black); /* For Opera 11.1 to 12.0 */
+                background: -moz-linear-gradient(red, black); /* For Firefox 3.6 to 15 */
+                background: linear-gradient(red, black); /* Standard syntax */
+            }
+
+            .nf-diamond-heading {
+                background: -webkit-linear-gradient(#81bfbc, #192474); /* For Safari 5.1 to 6.0 */
+                background: -o-linear-gradient(#81bfbc, #192474); /* For Opera 11.1 to 12.0 */
+                background: -moz-linear-gradient(#81bfbc, #192474); /* For Firefox 3.6 to 15 */
+                background: linear-gradient(#81bfbc, #192474); /* Standard syntax */
+            }
+
+            .nf-mcmmo-level-heading {
+                background: -webkit-linear-gradient(orange, black); /* For Safari 5.1 to 6.0 */
+                background: -o-linear-gradient(orange, black); /* For Opera 11.1 to 12.0 */
+                background: -moz-linear-gradient(orange, black); /* For Firefox 3.6 to 15 */
+                background: linear-gradient(orange, black); /* Standard syntax */
+            }
+
+            h6 {
+                color: white;
+            }
+
+            .panel-heading {
+                padding: 5px 13px;
+                border: 0;
+            }
+        </style>
     </head>
     <body>
         <nav class="navbar navbar-fixed-top header">
@@ -155,7 +193,7 @@
         <script type="text/javascript">
 
             var startIndex, endIndex;
-            var panelNode;
+            var loginPanelNode, deathPanelNode, diamondPanelNode, levelUpPanelNode;
 
             document.addEventListener('scroll', function (event) {
                 if (document.body.scrollHeight == 
@@ -168,64 +206,187 @@
                 }
             });            
 
-            var addStories = function(start, end) {
-                $.get( "http://www.maylincraft.com/data/newsfeed?startindex=" + start + "&endindex=" + end, function( data ) {
-                    var localPanelNode;
-                    var jsonObj = JSON.parse(data);
-                    jQuery.each(jsonObj, function(i, val) {
-
-                        var loginDesc = "Engaged";
-                        var lengthDesc = " the world for a commemorative measure of time";
-                        if (val.play_time_minutes < 30) {
-                            loginDesc = "Dabbled";
-                            lengthDesc = " for a few brief moments of time";
-                        } else if (val.play_time_minutes < 60) {
-                            loginDesc = "Logged In";
-                            lengthDesc = " for an ample measure of time";
-                        } else if (val.play_time_minutes < 120) { 
-                            loginDesc = "Played";
-                            lengthDesc = " for a respectable breath of time"; 
-                        } else if(val.play_time_minutes < 300) {
-                            loginDesc = "Joined";
-                            lengthDesc = " for a extended leeway of time"; 
-                        }
-
-                        localPanelNode = '';
-
-                        localPanelNode = panelNode.replace(/nf-replace-name/g, val.name);
-                        localPanelNode = localPanelNode.replace(/nf-replace-login/g, loginDesc);
-                        localPanelNode = localPanelNode.replace(/nf-replace-length-descriptor/g, lengthDesc);
-                        localPanelNode = localPanelNode.replace(/nf-replace-time/g, jQuery.timeago(val.login_time));
-
-                        var columnId = "#nf-column" + (i % 3);
-
-                        $(columnId).append(localPanelNode);
-                    });
-                });  
-            }
-
             $(function() {
 
                 startIndex = 0;
                 endIndex = 16;
 
-                panelNode = '';
-                panelNode += '<div class="panel panel-default">';
-                panelNode += '   <div class="panel-heading">';
-                panelNode += '      <img src="https://minotar.net/avatar/nf-replace-name/32" class="pull-right">';
-                panelNode += '      <h3>nf-replace-name <i>nf-replace-login</i></h3>';
-                panelNode += '   </div>';
-                panelNode += '   <div class="panel-body">';
-                panelNode += '      <div class="list-group">';
-                panelNode += '          nf-replace-length-descriptor';
-                panelNode += '          <br/>';
-                panelNode += '          <span style="color:lightgrey"><i>nf-replace-time</i></span>';
-                panelNode += '      </div">';
-                panelNode += '   </div>';
-                panelNode += '</div>';
+                loginPanelNode = '';
+                loginPanelNode += '<div class="panel panel-default">';
+                loginPanelNode += '   <div class="panel-heading nf-login-heading">';
+                loginPanelNode += '      <img src="https://minotar.net/avatar/nf-replace-name/32" class="pull-right">';
+                loginPanelNode += '      <h6>Log In</h6>';
+                loginPanelNode += '   </div>';
+                loginPanelNode += '   <div>';
+                loginPanelNode += '     <img class="img-responsive" src="images/creeperlove.jpg"/>';
+                loginPanelNode += '   </div>';
+                loginPanelNode += '   <div class="panel-body">';
+                loginPanelNode += '      <div class="list-group">';
+                loginPanelNode += '          <h2>nf-replace-name was <i>online</i></h2>';
+                loginPanelNode += '          <br/>';
+                loginPanelNode += '          nf-replace-length-descriptor';
+                loginPanelNode += '          <br/>';
+                loginPanelNode += '          <span style="color:grey"><i>nf-replace-time</i></span>';
+                loginPanelNode += '      </div">';
+                loginPanelNode += '   </div>';
+                loginPanelNode += '</div>';
+
+                deathPanelNode = '';
+                deathPanelNode += '<div class="panel panel-default">';
+                deathPanelNode += '   <div class="panel-heading nf-death-heading">';
+                deathPanelNode += '      <img src="https://minotar.net/avatar/nf-replace-name/32" class="pull-right">';
+                deathPanelNode += '      <h6>Killed in Action</h6>';
+                deathPanelNode += '   </div>';
+                deathPanelNode += '   <div>';
+                deathPanelNode += '     <img class="img-responsive" src="images/skeleowned.jpg"/>';
+                deathPanelNode += '   </div>';
+                deathPanelNode += '   <div class="panel-body">';
+                deathPanelNode += '      <div class="list-group">';
+                deathPanelNode += '          <h2>nf-replace-death-message</h2>';
+                deathPanelNode += '          <br/>';
+                deathPanelNode += '          <span style="color:grey"><i>nf-replace-time</i></span>';
+                deathPanelNode += '      </div">';
+                deathPanelNode += '   </div>';
+                deathPanelNode += '</div>';
+
+                diamondPanelNode = '';
+                diamondPanelNode += '<div class="panel panel-default">';
+                diamondPanelNode += '   <div class="panel-heading nf-diamond-heading">';
+                diamondPanelNode += '      <img src="https://minotar.net/avatar/nf-replace-name/32" class="pull-right">';
+                diamondPanelNode += '      <h6>Diamonds Found</h6>';
+                diamondPanelNode += '   </div>';
+                diamondPanelNode += '   <div>';
+                diamondPanelNode += '     <img class="img-responsive" src="images/diamondbreak.jpg"/>';
+                diamondPanelNode += '   </div>';
+                diamondPanelNode += '   <div class="panel-body">';
+                diamondPanelNode += '      <div class="list-group">';
+                diamondPanelNode += '          <h2>nf-replace-name found a vein of nf-replace-block-count Diamonds Blocks!</h2>';
+                diamondPanelNode += '          <br/>';
+                diamondPanelNode += '          <span style="color:grey"><i>nf-replace-time</i></span>';
+                diamondPanelNode += '      </div">';
+                diamondPanelNode += '   </div>';
+                diamondPanelNode += '</div>';
+
+                levelUpPanelNode = '';
+                levelUpPanelNode += '<div class="panel panel-default">';
+                levelUpPanelNode += '   <div class="panel-heading nf-mcmmo-level-heading">';
+                levelUpPanelNode += '      <img src="https://minotar.net/avatar/nf-replace-name/32" class="pull-right">';
+                levelUpPanelNode += '      <h6>McMMO Level Achievement</h6>';
+                levelUpPanelNode += '   </div>';
+                levelUpPanelNode += '   <div>';
+                levelUpPanelNode += '     <img class="img-responsive" src="images/levelup.jpg"/>';
+                levelUpPanelNode += '   </div>';
+                levelUpPanelNode += '   <div class="panel-body">';
+                levelUpPanelNode += '      <div class="list-group">';
+                levelUpPanelNode += '          <h2>nf-replace-name achieved level nf-replace-level in nf-replace-skill!</h2>';
+                levelUpPanelNode += '          <br/>';
+                levelUpPanelNode += '          <span style="color:grey"><i>nf-replace-time</i></span>';
+                levelUpPanelNode += '      </div">';
+                levelUpPanelNode += '   </div>';
+                levelUpPanelNode += '</div>';
 
                 addStories(startIndex, endIndex);
             });
+
+            var handleLoginNews = function(i, val) {
+
+                var loginDesc = "Logged In";
+                
+                if(val.last_action == 'login') {
+                    loginDesc = 'Is Online';
+                }
+
+                var lengthDesc;
+
+                if(parseInt(val.play_time_minutes) > 60) {
+                    lengthDesc = "for an hour or so";
+                } else if(parseInt(val.play_time_minutes) > 120) {
+                    lengthDesc = "for a couple of hours.";
+                } else  {
+                    lengthDesc = "for " + val.play_time_minutes + " minutes";
+                }
+
+                localPanelNode = '';
+
+                localPanelNode = loginPanelNode.replace(/nf-replace-name/g, val.name);
+                localPanelNode = localPanelNode.replace(/nf-replace-login/g, loginDesc);
+                localPanelNode = localPanelNode.replace(/nf-replace-length-descriptor/g, lengthDesc);
+                localPanelNode = localPanelNode.replace(/nf-replace-time/g, jQuery.timeago(val.login_time));
+
+                var columnId = "#nf-column" + (i % 3);
+
+                $(columnId).append(localPanelNode);
+            }
+
+            var handleDeathNews = function(i, val) {
+
+                var loginDesc = "Suffered Death";
+
+                localPanelNode = '';
+
+                localPanelNode = deathPanelNode.replace(/nf-replace-name/g, val.name);
+                localPanelNode = localPanelNode.replace(/nf-replace-login/g, loginDesc);
+                localPanelNode = localPanelNode.replace(/nf-replace-length-descriptor/g, val.death_message);
+                localPanelNode = localPanelNode.replace(/nf-replace-death-message/g, val.death_message);
+                localPanelNode = localPanelNode.replace(/nf-replace-time/g, jQuery.timeago(val.time));
+
+                var columnId = "#nf-column" + (i % 3);
+
+                $(columnId).append(localPanelNode);
+            }
+
+            var handleMcmmoLevelUpNews = function(i, val) {
+
+                var loginDesc = "Leveled up";
+
+                localPanelNode = '';
+
+                localPanelNode = levelUpPanelNode.replace(/nf-replace-name/g, val.name);
+                localPanelNode = localPanelNode.replace(/nf-replace-login/g, loginDesc);
+                localPanelNode = localPanelNode.replace(/nf-replace-skill/g, val.skill_type);
+                localPanelNode = localPanelNode.replace(/nf-replace-level/g, val.level);
+                localPanelNode = localPanelNode.replace(/nf-replace-time/g, jQuery.timeago(val.time));
+
+                var columnId = "#nf-column" + (i % 3);
+
+                $(columnId).append(localPanelNode);
+            }
+
+            var handleDiamondBreakNews = function(i, val) {
+
+                var loginDesc = "Diamonds!";
+
+                localPanelNode = '';
+
+                localPanelNode = diamondPanelNode.replace(/nf-replace-name/g, val.name);
+                localPanelNode = localPanelNode.replace(/nf-replace-login/g, loginDesc);
+                localPanelNode = localPanelNode.replace(/nf-replace-block-count/g, val.block_count);
+                localPanelNode = localPanelNode.replace(/nf-replace-time/g, jQuery.timeago(val.time));
+
+                var columnId = "#nf-column" + (i % 3);
+
+                $(columnId).append(localPanelNode);
+            }
+
+            var addStories = function(start, end) {
+                $.get( "../data/newsfeed?startindex=" + start + "&endindex=" + end, function( data ) {
+                    var localPanelNode;
+                    var jsonObj = JSON.parse(data);
+                    jQuery.each(jsonObj, function(i, val) {
+
+                        if(typeof val.news_type != 'undefined' && val.news_type == 'login') {
+                            handleLoginNews(i, val);        
+                        } else if(typeof val.news_type != 'undefined' && val.news_type == 'death') {
+                            handleDeathNews(i, val);        
+                        } else if(typeof val.news_type != 'undefined' && val.news_type == 'mcmmo_levelup') {
+                            handleMcmmoLevelUpNews(i, val);        
+                        } else if(typeof val.news_type != 'undefined' && val.news_type == 'diamond_break') {
+                            handleDiamondBreakNews(i, val);        
+                        }
+                    });
+                });  
+            }
+
         </script>
     </body>
 </html>

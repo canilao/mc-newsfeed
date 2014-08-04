@@ -390,7 +390,7 @@ public class Database {
          jsonObj.put("login_time", rs.getTimestamp("login_time") + "Z");
          jsonObj.put("logout_time", rs.getTimestamp("logout_time") + "Z");
          jsonObj.put("last_action", rs.getString("last_action"));
-         jsonObj.put("last_action", rs.getString("play_time_minutes"));
+         jsonObj.put("play_time_minutes", rs.getString("play_time_minutes"));
       }
 
       stmt.close();

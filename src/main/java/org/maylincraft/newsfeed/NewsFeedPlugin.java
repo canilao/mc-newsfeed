@@ -7,7 +7,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URL;
+import java.security.CodeSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -28,8 +33,6 @@ import org.maylincraft.newsfeed.listeners.BlockBreakListener;
 import org.maylincraft.newsfeed.listeners.LoginListener;
 import org.maylincraft.newsfeed.listeners.McmmoXpGainListener;
 import org.maylincraft.newsfeed.listeners.PlayerDeathListener;
-
-;
 
 public class NewsFeedPlugin extends JavaPlugin {
 
@@ -135,50 +138,48 @@ public class NewsFeedPlugin extends JavaPlugin {
       if (!webDir.exists()) {
          success &= webDir.mkdir();
       }
+      webDir = new File("plugins/newsfeed/web/images/");
+      if (!webDir.exists()) {
+         success &= webDir.mkdir();
+      }
 
       try {
          if (success) {
+            final String pluginDirectory = "plugins/newsfeed/";
+            
             // Copy the files to the structure.
-            copyFileFromJar("/web/index.html",
-                  "plugins/newsfeed/web/index.html");
-            copyFileFromJar("/web/css/bootstrap.min.css",
-                  "plugins/newsfeed/web/css/bootstrap.min.css");
-            copyFileFromJar("/web/css/styles.css",
-                  "plugins/newsfeed/web/css/styles.css");
-            copyFileFromJar("/web/js/bootstrap.min.js",
-                  "plugins/newsfeed/web/js/bootstrap.min.js");
-            copyFileFromJar("/web/js/scripts.js",
-                  "plugins/newsfeed/web/js/scripts.js");
-            copyFileFromJar("/web/fonts/glyphicons-halflings-regular.eot",
-                  "plugins/newsfeed/web/fonts/glyphicons-halflings-regular.eot");
-            copyFileFromJar("/web/fonts/glyphicons-halflings-regular.svg",
-                  "plugins/newsfeed/web/fonts/glyphicons-halflings-regular.svg");
-            copyFileFromJar("/web/fonts/glyphicons-halflings-regular.ttf",
-                  "plugins/newsfeed/web/fonts/glyphicons-halflings-regular.ttf");
-            copyFileFromJar("/web/fonts/glyphicons-halflings-regular.woff",
-                  "plugins/newsfeed/web/fonts/glyphicons-halflings-regular.woff");
-            copyFileFromJar("/web/css/bootstrap-theme.css",
-                  "plugins/newsfeed/web/css/bootstrap-theme.css");
-            copyFileFromJar("/web/css/bootstrap-theme.css.map",
-                  "plugins/newsfeed/web/css/bootstrap-theme.css.map");
-            copyFileFromJar("/web/css/bootstrap-theme.min.css",
-                  "plugins/newsfeed/web/css/bootstrap-theme.min.css");
-            copyFileFromJar("/web/css/bootstrap.css",
-                  "plugins/newsfeed/web/css/bootstrap.css");
-            copyFileFromJar("/web/css/bootstrap.css.map",
-                  "plugins/newsfeed/web/css/bootstrap.css.map");
-            copyFileFromJar("/web/js/bootstrap.js",
-                  "plugins/newsfeed/web/js/bootstrap.js");
-            copyFileFromJar("/web/js/jquery-2.1.1.js",
-                  "plugins/newsfeed/web/js/jquery-2.1.1.js");
-            copyFileFromJar("/web/js/jquery.timeago.js",
-                  "plugins/newsfeed/web/js/jquery.timeago.js");
+            ArrayList<String> files = getListOfFilesInJarLocation("web/");
+            
+            for(String file : files) {
+               copyFileFromJar("/" + file, pluginDirectory + file);
+            }
          } else {
             throw new IOException();
          }
       } catch (IOException e) {
          logSevere("Failed to create directory structure", e);
       }
+   }
+
+   private ArrayList<String> getListOfFilesInJarLocation(String resourcePath) throws IOException {
+      ArrayList<String> files = new ArrayList<String>();
+      CodeSource src = NewsFeedPlugin.class.getProtectionDomain()
+            .getCodeSource();
+      if (src != null) {
+         URL jar = src.getLocation();
+         ZipInputStream zip = new ZipInputStream(jar.openStream());
+         while (true) {
+            ZipEntry e = zip.getNextEntry();
+            if (e == null)
+               break;
+            String name = e.getName();
+            if (name.startsWith(resourcePath) && !e.isDirectory()) {
+               files.add(name);
+            }
+         }
+      } else {
+      }
+      return files;
    }
 
    private void copyFileFromJar(String resourcePath, String destinationPath)
