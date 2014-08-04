@@ -222,7 +222,7 @@
                 loginPanelNode += '   </div>';
                 loginPanelNode += '   <div class="panel-body">';
                 loginPanelNode += '      <div class="list-group">';
-                loginPanelNode += '          <h2>nf-replace-name was <i>online</i></h2>';
+                loginPanelNode += '          <h2>nf-replace-name nf-replace-is-online <i>online</i></h2>';
                 loginPanelNode += '          <br/>';
                 loginPanelNode += '          nf-replace-length-descriptor';
                 loginPanelNode += '          <br/>';
@@ -253,14 +253,14 @@
                 diamondPanelNode += '<div class="panel panel-default">';
                 diamondPanelNode += '   <div class="panel-heading nf-diamond-heading">';
                 diamondPanelNode += '      <img src="https://minotar.net/avatar/nf-replace-name/32" class="pull-right">';
-                diamondPanelNode += '      <h6>Diamonds Found</h6>';
+                diamondPanelNode += '      <h6>Diamonds</h6>';
                 diamondPanelNode += '   </div>';
                 diamondPanelNode += '   <div>';
                 diamondPanelNode += '     <img class="img-responsive" src="images/diamondbreak.jpg"/>';
                 diamondPanelNode += '   </div>';
                 diamondPanelNode += '   <div class="panel-body">';
                 diamondPanelNode += '      <div class="list-group">';
-                diamondPanelNode += '          <h2>nf-replace-name found a vein of nf-replace-block-count Diamonds Blocks!</h2>';
+                diamondPanelNode += '          <h2>nf-replace-name discovered a vein of diamond blocks (nf-replace-block-count) !</h2>';
                 diamondPanelNode += '          <br/>';
                 diamondPanelNode += '          <span style="color:grey"><i>nf-replace-time</i></span>';
                 diamondPanelNode += '      </div">';
@@ -290,10 +290,10 @@
 
             var handleLoginNews = function(i, val) {
 
-                var loginDesc = "Logged In";
+                var quickDesc = "Logged In";
                 
                 if(val.last_action == 'login') {
-                    loginDesc = 'Is Online';
+                    quickDesc = 'Is Online';
                 }
 
                 var lengthDesc;
@@ -309,8 +309,16 @@
                 localPanelNode = '';
 
                 localPanelNode = loginPanelNode.replace(/nf-replace-name/g, val.name);
-                localPanelNode = localPanelNode.replace(/nf-replace-login/g, loginDesc);
-                localPanelNode = localPanelNode.replace(/nf-replace-length-descriptor/g, lengthDesc);
+                localPanelNode = localPanelNode.replace(/nf-replace-quick-desc/g, quickDesc);
+
+                if(val.is_online == true) {
+                    localPanelNode = localPanelNode.replace(/nf-replace-is-online/g, "is");
+                    localPanelNode = localPanelNode.replace(/nf-replace-length-descriptor/g, '');
+                } else {
+                    localPanelNode = localPanelNode.replace(/nf-replace-is-online/g, "was");
+                    localPanelNode = localPanelNode.replace(/nf-replace-length-descriptor/g, lengthDesc);
+                }
+
                 localPanelNode = localPanelNode.replace(/nf-replace-time/g, jQuery.timeago(val.login_time));
 
                 var columnId = "#nf-column" + (i % 3);
@@ -320,12 +328,12 @@
 
             var handleDeathNews = function(i, val) {
 
-                var loginDesc = "Suffered Death";
+                var quickDesc = "Suffered Death";
 
                 localPanelNode = '';
 
                 localPanelNode = deathPanelNode.replace(/nf-replace-name/g, val.name);
-                localPanelNode = localPanelNode.replace(/nf-replace-login/g, loginDesc);
+                localPanelNode = localPanelNode.replace(/nf-replace-quick-desc/g, quickDesc);
                 localPanelNode = localPanelNode.replace(/nf-replace-length-descriptor/g, val.death_message);
                 localPanelNode = localPanelNode.replace(/nf-replace-death-message/g, val.death_message);
                 localPanelNode = localPanelNode.replace(/nf-replace-time/g, jQuery.timeago(val.time));
@@ -337,12 +345,12 @@
 
             var handleMcmmoLevelUpNews = function(i, val) {
 
-                var loginDesc = "Leveled up";
+                var quickDesc = "Leveled up";
 
                 localPanelNode = '';
 
                 localPanelNode = levelUpPanelNode.replace(/nf-replace-name/g, val.name);
-                localPanelNode = localPanelNode.replace(/nf-replace-login/g, loginDesc);
+                localPanelNode = localPanelNode.replace(/nf-replace-quick-desc/g, quickDesc);
                 localPanelNode = localPanelNode.replace(/nf-replace-skill/g, val.skill_type);
                 localPanelNode = localPanelNode.replace(/nf-replace-level/g, val.level);
                 localPanelNode = localPanelNode.replace(/nf-replace-time/g, jQuery.timeago(val.time));
@@ -354,12 +362,12 @@
 
             var handleDiamondBreakNews = function(i, val) {
 
-                var loginDesc = "Diamonds!";
+                var quickDesc = "Diamonds!";
 
                 localPanelNode = '';
 
                 localPanelNode = diamondPanelNode.replace(/nf-replace-name/g, val.name);
-                localPanelNode = localPanelNode.replace(/nf-replace-login/g, loginDesc);
+                localPanelNode = localPanelNode.replace(/nf-replace-quick-desc/g, quickDesc);
                 localPanelNode = localPanelNode.replace(/nf-replace-block-count/g, val.block_count);
                 localPanelNode = localPanelNode.replace(/nf-replace-time/g, jQuery.timeago(val.time));
 

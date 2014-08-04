@@ -19,9 +19,11 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -91,6 +93,23 @@ public class Database {
 
       stmt.close();
       connection.close();
+
+      // Schedule news finder related to logins.
+      scheduleLoginNewsFinder();
+   }
+
+   private void scheduleLoginNewsFinder() {
+      new BukkitRunnable() {
+         public void run() {
+            try {
+               NewsFeedPlugin.getNewsFeedDatabase().runLoginNewsFinder();
+            } catch (IOException e) {
+               NewsFeedPlugin.logSevere("Failed to run news finder", e);
+            } catch (SQLException e) {
+               NewsFeedPlugin.logSevere("Failed to run news finder", e);
+            }
+         }
+      }.runTaskLater(NewsFeedPlugin.getInstance(), 20);
    }
 
    public void insertPlayerQuit(String name, String time) throws SQLException {
@@ -112,6 +131,9 @@ public class Database {
 
       stmt.close();
       connection.close();
+
+      // Schedule news finder related to logins.
+      scheduleLoginNewsFinder();
    }
 
    public void insertMcmmoSkillEvent(McMMOPlayerLevelUpEvent event)
@@ -391,6 +413,10 @@ public class Database {
          jsonObj.put("logout_time", rs.getTimestamp("logout_time") + "Z");
          jsonObj.put("last_action", rs.getString("last_action"));
          jsonObj.put("play_time_minutes", rs.getString("play_time_minutes"));
+         // TODO: Change player information to UUIDs.
+         Player thePlayer = Bukkit.getPlayerExact(rs.getString("name"));
+         boolean isOnline = thePlayer == null ? false : thePlayer.isOnline() && rs.getString("last_action").equals("login");
+         jsonObj.put("is_online", isOnline);
       }
 
       stmt.close();
@@ -522,6 +548,30 @@ public class Database {
 
       stmt.close();
       connection.close();
+      
+      // Schedule diamond news finder.
+      scheduleDiamondNewsFinder();
+   }
+
+   private BukkitRunnable diamondNewsFinderRunnable = null;
+
+   private void scheduleDiamondNewsFinder() {
+      // Several diamond breaks can happen in succession, run it after he/she is done.
+      if (diamondNewsFinderRunnable == null) {
+         diamondNewsFinderRunnable = new BukkitRunnable() {
+            public void run() {
+               try {
+                  NewsFeedPlugin.getNewsFeedDatabase().runDiamondNewsFinder();
+               } catch (IOException e) {
+                  NewsFeedPlugin.logSevere("Failed to run news finder", e);
+               } catch (SQLException e) {
+                  NewsFeedPlugin.logSevere("Failed to run news finder", e);
+               }
+               diamondNewsFinderRunnable = null;
+            }
+         };
+         diamondNewsFinderRunnable.runTaskLater(NewsFeedPlugin.getInstance(), 20 * 60);
+      }
    }
 
    public void runLoginNewsFinder() throws IOException, SQLException {

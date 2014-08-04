@@ -146,11 +146,11 @@ public class NewsFeedPlugin extends JavaPlugin {
       try {
          if (success) {
             final String pluginDirectory = "plugins/newsfeed/";
-            
+
             // Copy the files to the structure.
             ArrayList<String> files = getListOfFilesInJarLocation("web/");
-            
-            for(String file : files) {
+
+            for (String file : files) {
                copyFileFromJar("/" + file, pluginDirectory + file);
             }
          } else {
@@ -161,7 +161,8 @@ public class NewsFeedPlugin extends JavaPlugin {
       }
    }
 
-   private ArrayList<String> getListOfFilesInJarLocation(String resourcePath) throws IOException {
+   private ArrayList<String> getListOfFilesInJarLocation(String resourcePath)
+         throws IOException {
       ArrayList<String> files = new ArrayList<String>();
       CodeSource src = NewsFeedPlugin.class.getProtectionDomain()
             .getCodeSource();
