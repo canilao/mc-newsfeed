@@ -51,7 +51,7 @@ MERGE INTO diamond_break_news (
     group_label
 ) KEY(event_uuid) (
     SELECT 
-        (SELECT event_uuid FROM grouped_rows c WHERE b.time=c.time AND c.player_id=@player_id) AS event_uuid, 
+        (SELECT event_uuid FROM grouped_rows c WHERE b.time=c.time AND c.player_id=@player_id ORDER BY id DESC LIMIT 1) AS event_uuid, 
         * 
     FROM (
         SELECT 
