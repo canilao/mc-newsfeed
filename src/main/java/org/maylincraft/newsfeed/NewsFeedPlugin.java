@@ -101,6 +101,7 @@ public class NewsFeedPlugin extends JavaPlugin {
             try {
                getNewsFeedDatabase().runLoginNewsFinder();
                getNewsFeedDatabase().runDiamondNewsFinder();
+               getNewsFeedDatabase().runDeathNewsFinder();
             } catch (IOException e) {
                logWarning("Failed to initialize run News Finder: ", e);
                e.printStackTrace();

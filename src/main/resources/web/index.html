@@ -1,6 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
     <head>
+        <style>
+            .a {
+            width: 220px;
+            height: 220px;
+            margin: 10px;
+            float: left;
+            background: black;
+            }
+            .b {
+            width: 120px;
+            height: 320px;
+            margin: 10px;
+            float: left;
+            background: red;
+            }
+        </style>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <meta charset="utf-8">
         <title>MaylinCraft Newsfeed</title>
@@ -12,41 +28,80 @@
         <![endif]-->
         <link href="css/styles.css" rel="stylesheet">
         <style>
-            .nf-login-heading {
-                background: -webkit-linear-gradient(#5ad137, black); /* For Safari 5.1 to 6.0 */
-                background: -o-linear-gradient(#5ad137, black); /* For Opera 11.1 to 12.0 */
-                background: -moz-linear-gradient(#5ad137, black); /* For Firefox 3.6 to 15 */
-                background: linear-gradient(#5ad137, black); /* Standard syntax */
+            .nf-login-heading-online {
+            background: -webkit-linear-gradient(black, #5ad137); /* For Safari 5.1 to 6.0 */
+            background: -o-linear-gradient(black, #5ad137); /* For Opera 11.1 to 12.0 */
+            background: -moz-linear-gradient(black, #5ad137); /* For Firefox 3.6 to 15 */
+            background: linear-gradient(black, #5ad137); /* Standard syntax */
             }
-
+            .nf-login-heading-offline {
+            background: -webkit-linear-gradient(#5ad137, black); /* For Safari 5.1 to 6.0 */
+            background: -o-linear-gradient(#5ad137, black); /* For Opera 11.1 to 12.0 */
+            background: -moz-linear-gradient(#5ad137, black); /* For Firefox 3.6 to 15 */
+            background: linear-gradient(#5ad137, black); /* Standard syntax */
+            }
+            .nf-login-panel {
+            width:267px;
+            height:243px;
+            float: left;
+            }
+            .nf-death-panel {
+            width:534px;
+            height:329px;
+            float: left;
+            }
+            .nf-diamond-panel {
+            width:534px;
+            height:331px;
+            float: left;
+            }
+            .nf-mcmmo-levelup-panel {
+            width:534px;
+            height:364px;
+            float: left;
+            }
             .nf-death-heading {
-                background: -webkit-linear-gradient(red, black); /* For Safari 5.1 to 6.0 */
-                background: -o-linear-gradient(red, black); /* For Opera 11.1 to 12.0 */
-                background: -moz-linear-gradient(red, black); /* For Firefox 3.6 to 15 */
-                background: linear-gradient(red, black); /* Standard syntax */
+            background: -webkit-linear-gradient(red, black); /* For Safari 5.1 to 6.0 */
+            background: -o-linear-gradient(red, black); /* For Opera 11.1 to 12.0 */
+            background: -moz-linear-gradient(red, black); /* For Firefox 3.6 to 15 */
+            background: linear-gradient(red, black); /* Standard syntax */
             }
-
             .nf-diamond-heading {
-                background: -webkit-linear-gradient(#81bfbc, #192474); /* For Safari 5.1 to 6.0 */
-                background: -o-linear-gradient(#81bfbc, #192474); /* For Opera 11.1 to 12.0 */
-                background: -moz-linear-gradient(#81bfbc, #192474); /* For Firefox 3.6 to 15 */
-                background: linear-gradient(#81bfbc, #192474); /* Standard syntax */
+            background: -webkit-linear-gradient(#81bfbc, #192474); /* For Safari 5.1 to 6.0 */
+            background: -o-linear-gradient(#81bfbc, #192474); /* For Opera 11.1 to 12.0 */
+            background: -moz-linear-gradient(#81bfbc, #192474); /* For Firefox 3.6 to 15 */
+            background: linear-gradient(#81bfbc, #192474); /* Standard syntax */
             }
-
-            .nf-mcmmo-level-heading {
-                background: -webkit-linear-gradient(orange, black); /* For Safari 5.1 to 6.0 */
-                background: -o-linear-gradient(orange, black); /* For Opera 11.1 to 12.0 */
-                background: -moz-linear-gradient(orange, black); /* For Firefox 3.6 to 15 */
-                background: linear-gradient(orange, black); /* Standard syntax */
+            .nf-mcmmo-levelup-heading {
+            background: -webkit-linear-gradient(orange, black); /* For Safari 5.1 to 6.0 */
+            background: -o-linear-gradient(orange, black); /* For Opera 11.1 to 12.0 */
+            background: -moz-linear-gradient(orange, black); /* For Firefox 3.6 to 15 */
+            background: linear-gradient(orange, black); /* Standard syntax */
             }
-
             h6 {
-                color: white;
+            color: white;
             }
-
             .panel-heading {
-                padding: 5px 13px;
-                border: 0;
+            border: 0;
+            padding: 3px 13px;
+            }
+            h3 {
+            margin-top: 0px;
+            }
+            .nf-time {
+            color: grey;
+            }
+            .nf-list-group {
+            height: 115px;
+            }
+            .death-item {
+            background: #333;
+            text-align: center;
+            height: 288px !important;
+            width: 100%;
+            }
+            .death-panel-body {
+            padding: 0;
             }
         </style>
     </head>
@@ -116,14 +171,7 @@
         </div>
         <!--main-->
         <div class="container" id="main">
-            <div class="row">
-                <div id="nf-column0" class="col-md-4 col-sm-6">
-                </div>
-                <div id="nf-column1" class="col-md-4 col-sm-6">
-                </div>
-                <div id="nf-column2" class="col-md-4 col-sm-6">
-                </div>
-            </div>
+            <div id="nf-row" class="row"></div>
             <!--/row-->
             <div class="clearfix"></div>
             <hr>
@@ -188,13 +236,11 @@
         <script src="js/jquery-2.1.1.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="js/scripts.js"></script>
-        <script src="js/jquery.timeago.js" type="text/javascript"></script>
-
+        <script src="js/jquery.shuffle.js"></script>
+        <script src="js/moment.js"></script>
         <script type="text/javascript">
-
-            var startIndex, endIndex;
-            var loginPanelNode, deathPanelNode, diamondPanelNode, levelUpPanelNode;
-
+            var startIndex, endIndex, delayTimer;
+            
             document.addEventListener('scroll', function (event) {
                 if (document.body.scrollHeight == 
                     document.body.scrollTop +        
@@ -205,196 +251,283 @@
                     addStories(startIndex, endIndex);
                 }
             });            
-
-            $(function() {
-
-                startIndex = 0;
-                endIndex = 16;
-
-                loginPanelNode = '';
-                loginPanelNode += '<div class="panel panel-default">';
-                loginPanelNode += '   <div class="panel-heading nf-login-heading">';
-                loginPanelNode += '      <img src="https://minotar.net/avatar/nf-replace-name/32" class="pull-right">';
-                loginPanelNode += '      <h6>Log In</h6>';
-                loginPanelNode += '   </div>';
-                loginPanelNode += '   <div>';
-                loginPanelNode += '     <img class="img-responsive" src="images/creeperlove.jpg"/>';
-                loginPanelNode += '   </div>';
-                loginPanelNode += '   <div class="panel-body">';
-                loginPanelNode += '      <div class="list-group">';
-                loginPanelNode += '          <h2>nf-replace-name nf-replace-is-online <i>online</i></h2>';
-                loginPanelNode += '          <br/>';
-                loginPanelNode += '          nf-replace-length-descriptor';
-                loginPanelNode += '          <br/>';
-                loginPanelNode += '          <span style="color:grey"><i>nf-replace-time</i></span>';
-                loginPanelNode += '      </div">';
-                loginPanelNode += '   </div>';
-                loginPanelNode += '</div>';
-
-                deathPanelNode = '';
-                deathPanelNode += '<div class="panel panel-default">';
-                deathPanelNode += '   <div class="panel-heading nf-death-heading">';
-                deathPanelNode += '      <img src="https://minotar.net/avatar/nf-replace-name/32" class="pull-right">';
-                deathPanelNode += '      <h6>Killed in Action</h6>';
-                deathPanelNode += '   </div>';
-                deathPanelNode += '   <div>';
-                deathPanelNode += '     <img class="img-responsive" src="images/skeleowned.jpg"/>';
-                deathPanelNode += '   </div>';
-                deathPanelNode += '   <div class="panel-body">';
-                deathPanelNode += '      <div class="list-group">';
-                deathPanelNode += '          <h2>nf-replace-death-message</h2>';
-                deathPanelNode += '          <br/>';
-                deathPanelNode += '          <span style="color:grey"><i>nf-replace-time</i></span>';
-                deathPanelNode += '      </div">';
-                deathPanelNode += '   </div>';
-                deathPanelNode += '</div>';
-
-                diamondPanelNode = '';
-                diamondPanelNode += '<div class="panel panel-default">';
-                diamondPanelNode += '   <div class="panel-heading nf-diamond-heading">';
-                diamondPanelNode += '      <img src="https://minotar.net/avatar/nf-replace-name/32" class="pull-right">';
-                diamondPanelNode += '      <h6>Diamonds</h6>';
-                diamondPanelNode += '   </div>';
-                diamondPanelNode += '   <div>';
-                diamondPanelNode += '     <img class="img-responsive" src="images/diamondbreak.jpg"/>';
-                diamondPanelNode += '   </div>';
-                diamondPanelNode += '   <div class="panel-body">';
-                diamondPanelNode += '      <div class="list-group">';
-                diamondPanelNode += '          <h2>nf-replace-name discovered a vein of diamond blocks (nf-replace-block-count) !</h2>';
-                diamondPanelNode += '          <br/>';
-                diamondPanelNode += '          <span style="color:grey"><i>nf-replace-time</i></span>';
-                diamondPanelNode += '      </div">';
-                diamondPanelNode += '   </div>';
-                diamondPanelNode += '</div>';
-
-                levelUpPanelNode = '';
-                levelUpPanelNode += '<div class="panel panel-default">';
-                levelUpPanelNode += '   <div class="panel-heading nf-mcmmo-level-heading">';
-                levelUpPanelNode += '      <img src="https://minotar.net/avatar/nf-replace-name/32" class="pull-right">';
-                levelUpPanelNode += '      <h6>McMMO Level Achievement</h6>';
-                levelUpPanelNode += '   </div>';
-                levelUpPanelNode += '   <div>';
-                levelUpPanelNode += '     <img class="img-responsive" src="images/levelup.jpg"/>';
-                levelUpPanelNode += '   </div>';
-                levelUpPanelNode += '   <div class="panel-body">';
-                levelUpPanelNode += '      <div class="list-group">';
-                levelUpPanelNode += '          <h2>nf-replace-name achieved level nf-replace-level in nf-replace-skill!</h2>';
-                levelUpPanelNode += '          <br/>';
-                levelUpPanelNode += '          <span style="color:grey"><i>nf-replace-time</i></span>';
-                levelUpPanelNode += '      </div">';
-                levelUpPanelNode += '   </div>';
-                levelUpPanelNode += '</div>';
-
-                addStories(startIndex, endIndex);
-            });
-
-            var handleLoginNews = function(i, val) {
-
-                var quickDesc = "Logged In";
-                
-                if(val.last_action == 'login') {
-                    quickDesc = 'Is Online';
-                }
+            
+            function getLoginPanelElement(val) {
+            
+                var snip = '';
+            
+                snip += '<div class="panel panel-default nf-login-panel">';
+                snip += '   <div class="panel-heading nf-replace-class">';
+                snip += '      <img src="https://minotar.net/avatar/nf-replace-name/28" class="pull-right">';
+                snip += '      <h6>nf-replace-header</h6>';
+                snip += '   </div>';
+                snip += '   <div>';
+                snip += '     <img class="img-responsive" src="images/nf-replace-image"/>';
+                snip += '   </div>';
+                snip += '   <div class="panel-body">';
+                snip += '      <h3><i>nf-replace-name</i></h3>';
+                snip += '      <p class="nf-time"><i>nf-replace-time nf-replace-length-descriptor</i></p>';
+                snip += '   </div>';
+                snip += '</div>';
 
                 var lengthDesc;
-
                 if(parseInt(val.play_time_minutes) > 60) {
-                    lengthDesc = "for an hour or so";
-                } else if(parseInt(val.play_time_minutes) > 120) {
-                    lengthDesc = "for a couple of hours.";
+                    lengthDesc = "for 1+ hours";
                 } else  {
                     lengthDesc = "for " + val.play_time_minutes + " minutes";
                 }
+                snip = snip.replace(/nf-replace-length-descriptor/g, lengthDesc);
 
-                localPanelNode = '';
-
-                localPanelNode = loginPanelNode.replace(/nf-replace-name/g, val.name);
-                localPanelNode = localPanelNode.replace(/nf-replace-quick-desc/g, quickDesc);
-
+                snip = snip.replace(/nf-replace-name/g, val.name);
+            
                 if(val.is_online == true) {
-                    localPanelNode = localPanelNode.replace(/nf-replace-is-online/g, "is");
-                    localPanelNode = localPanelNode.replace(/nf-replace-length-descriptor/g, '');
+                    snip = snip.replace(/nf-replace-header/g, "Online Now");
+                    snip = snip.replace(/nf-replace-class/g, "nf-login-heading-online");
+                    snip = snip.replace(/nf-replace-image/g, "dpick.jpg");
                 } else {
-                    localPanelNode = localPanelNode.replace(/nf-replace-is-online/g, "was");
-                    localPanelNode = localPanelNode.replace(/nf-replace-length-descriptor/g, lengthDesc);
+                    snip = snip.replace(/nf-replace-header/g, "Logged In");
+                    snip = snip.replace(/nf-replace-class/g, "nf-login-heading-offline");
+                    snip = snip.replace(/nf-replace-image/g, "creeperlove.jpg");
+                }
+            
+                snip = snip.replace(/nf-replace-time/g, moment(val.login_time).calendar());
+            
+                return $.parseHTML(snip);
+            }
+            
+            function getDeathPanelElement(val) {
+
+                // Get the number of deaths for this panel.
+                var deathCount = parseInt(val.death_count), i;
+                var itemSnip;
+            
+                var snip = '';
+
+                snip += '<div class="panel panel-default nf-death-panel">';
+                snip += '   <div class="panel-heading nf-death-heading">';
+                snip += '      <img src="https://minotar.net/avatar/' + val.name + '/32" class="pull-right">';
+                snip += '      <h6>Killed in Action</h6>';
+                snip += '   </div>';
+                snip += '   <div class="death-panel-body panel-body">';
+                snip += '      <div id="nf-replace-carousel-id" class ="carousel slide" data-interval="3000" data-ride="carousel">';
+                snip += '         <!-- Carousel indicators -->';
+                snip += '         <ol class="carousel-indicators">';
+                
+                for(i = 0 ; i < deathCount ; ++i) {
+                    if(i == 0) {
+                        snip += '    <li data-target="#nf-replace-carousel-id" data-slide-to="0" class="active"></li>';
+                    } else {
+                        snip += '    <li data-target="#nf-replace-carousel-id" data-slide-to="' + i + '"></li>';
+                    }
                 }
 
-                localPanelNode = localPanelNode.replace(/nf-replace-time/g, jQuery.timeago(val.login_time));
+                snip += '         </ol>';
+                snip += '         <!-- Carousel items -->';
+                snip += '         <div class="carousel-inner">';
 
-                var columnId = "#nf-column" + (i % 3);
+                for(i = 0 ; i < deathCount ; ++i) {
 
-                $(columnId).append(localPanelNode);
+                    itemSnip ='';
+
+                    if(i == 0) {
+                        itemSnip += '<div class="active item death-item">';
+                        itemSnip += '   <img class="img-responsive" src="images/skeleowned.jpg"/>';
+                        itemSnip += '   <div class="carousel-caption">';
+                        itemSnip += '      <h3>nf-replace-cause</h3>';
+                        itemSnip += '      <p>nf-replace-death-message</p>';
+                        itemSnip += '      <p>nf-replace-time</p>';
+                        itemSnip += '   </div>';
+                        itemSnip += '</div>';
+                    } else {
+                        itemSnip += '<div class="item death-item">';
+                        itemSnip += '   <img class="img-responsive" src="images/skeleowned.jpg"/>';
+                        itemSnip += '   <div class="carousel-caption">';
+                        itemSnip += '      <h3>nf-replace-cause</h3>';
+                        itemSnip += '      <p>nf-replace-death-message</p>';
+                        itemSnip += '      <p>nf-replace-time</p>';
+                        itemSnip += '   </div>';
+                        itemSnip += '</div>';
+                    }
+
+                    itemSnip = itemSnip.replace(/nf-replace-name/g, val.name);
+            
+                    itemSnip = itemSnip.replace(/nf-replace-cause/g, getDescriptiveCauseOfDeath(val.deaths[i]));
+                    itemSnip = itemSnip.replace(/nf-replace-death-message/g, val.deaths[i].death_message);
+                    itemSnip = itemSnip.replace(/nf-replace-time/g, moment(val.deaths[i].time).calendar());
+
+                    snip += itemSnip;
+                }
+
+                snip += '         </div>';
+                snip += '         <!-- Carousel nav -->';
+                snip += '         <a class="carousel-control left" href="#nf-replace-carousel-id" data-slide="prev">';
+                snip += '            <span class="glyphicon glyphicon-chevron-left"></span>';
+                snip += '         </a>';
+                snip += '         <a class="carousel-control right" href="#nf-replace-carousel-id" data-slide="next">';
+                snip += '            <span class="glyphicon glyphicon-chevron-right"></span>';
+                snip += '         </a>';
+                snip += '      </div>';
+                snip += '   </div>';
+                snip += '</div>';
+
+                snip = snip.replace(/nf-replace-carousel-id/g, Math.floor(Math.random() * 100000));
+            
+               return $.parseHTML(snip);
             }
-
-            var handleDeathNews = function(i, val) {
-
-                var quickDesc = "Suffered Death";
-
-                localPanelNode = '';
-
-                localPanelNode = deathPanelNode.replace(/nf-replace-name/g, val.name);
-                localPanelNode = localPanelNode.replace(/nf-replace-quick-desc/g, quickDesc);
-                localPanelNode = localPanelNode.replace(/nf-replace-length-descriptor/g, val.death_message);
-                localPanelNode = localPanelNode.replace(/nf-replace-death-message/g, val.death_message);
-                localPanelNode = localPanelNode.replace(/nf-replace-time/g, jQuery.timeago(val.time));
-
-                var columnId = "#nf-column" + (i % 3);
-
-                $(columnId).append(localPanelNode);
+            
+            function getDiamondPanelElement(val) {
+            
+                var snip = '';
+            
+                snip += '<div class="panel panel-default nf-diamond-panel">';
+                snip += '   <div class="panel-heading nf-diamond-heading">';
+                snip += '      <img src="https://minotar.net/avatar/nf-replace-name/32" class="pull-right">';
+                snip += '      <h6>Diamonds</h6>';
+                snip += '   </div>';
+                snip += '   <div>';
+                snip += '     <img class="img-responsive" src="images/diamondbreak.jpg"/>';
+                snip += '   </div>';
+                snip += '   <div class="panel-body">';
+                snip += '      <div class="list-group">';
+                snip += '         <h3><i>nf-replace-name</i></h3>';
+                snip += '         <p><i>Discovered nf-replace-block-count diamond blocks</i></p>';
+                snip += '         <p class="nf-time"><i>nf-replace-time</i></p>';
+                snip += '      </div">';
+                snip += '   </div>';
+                snip += '</div>';
+            
+                snip = snip.replace(/nf-replace-name/g, val.name);
+                snip = snip.replace(/nf-replace-block-count/g, val.block_count);
+                snip = snip.replace(/nf-replace-time/g, moment(val.time).calendar());
+            
+               return $.parseHTML(snip);
             }
-
-            var handleMcmmoLevelUpNews = function(i, val) {
-
-                var quickDesc = "Leveled up";
-
-                localPanelNode = '';
-
-                localPanelNode = levelUpPanelNode.replace(/nf-replace-name/g, val.name);
-                localPanelNode = localPanelNode.replace(/nf-replace-quick-desc/g, quickDesc);
-                localPanelNode = localPanelNode.replace(/nf-replace-skill/g, val.skill_type);
-                localPanelNode = localPanelNode.replace(/nf-replace-level/g, val.level);
-                localPanelNode = localPanelNode.replace(/nf-replace-time/g, jQuery.timeago(val.time));
-
-                var columnId = "#nf-column" + (i % 3);
-
-                $(columnId).append(localPanelNode);
+            
+            function getLevelUpPanelElement(val) {
+            
+                var snip = '';
+            
+                snip += '<div class="panel panel-default nf-mcmmo-levelup-panel">';
+                snip += '   <div class="panel-heading nf-mcmmo-levelup-heading">';
+                snip += '      <img src="https://minotar.net/avatar/nf-replace-name/32" class="pull-right">';
+                snip += '      <h6>McMMO Level Achievement</h6>';
+                snip += '   </div>';
+                snip += '   <div>';
+                snip += '     <img class="img-responsive" src="images/levelup.jpg"/>';
+                snip += '   </div>';
+                snip += '   <div class="panel-body">';
+                snip += '      <div class="list-group">';
+                snip += '         <div class="panel-body">';
+                snip += '         <h3><i>nf-replace-name</i></h3>';
+                snip += '         <p><i>Reached level nf-replace-level in nf-replace-skill</i></p>';
+                snip += '         <p class="nf-time"><i>nf-replace-time</i></p>';
+                snip += '      </div>';
+                snip += '   </div">';
+                snip += '</div>';
+            
+                snip = snip.replace(/nf-replace-name/g, val.name);
+                snip = snip.replace(/nf-replace-skill/g, val.skill_type);
+                snip = snip.replace(/nf-replace-level/g, val.level);
+                snip = snip.replace(/nf-replace-time/g, moment(val.time).calendar());
+            
+               return $.parseHTML(snip);
             }
-
-            var handleDiamondBreakNews = function(i, val) {
-
-                var quickDesc = "Diamonds!";
-
-                localPanelNode = '';
-
-                localPanelNode = diamondPanelNode.replace(/nf-replace-name/g, val.name);
-                localPanelNode = localPanelNode.replace(/nf-replace-quick-desc/g, quickDesc);
-                localPanelNode = localPanelNode.replace(/nf-replace-block-count/g, val.block_count);
-                localPanelNode = localPanelNode.replace(/nf-replace-time/g, jQuery.timeago(val.time));
-
-                var columnId = "#nf-column" + (i % 3);
-
-                $(columnId).append(localPanelNode);
+            
+            function myFunction() {
+                startIndex = endIndex;
+                endIndex += 10;
+                addStories(startIndex, endIndex);
             }
-
+            
+            $(function() {
+                startIndex = 0;
+                endIndex = 30;
+            
+                $('#nf-row').shuffle({
+                    itemSelector: '.panel',
+                    columnWidth: 267,
+                    gutterWidth: 8 
+                });
+            
+                addStories(startIndex, endIndex);
+            });
+            
             var addStories = function(start, end) {
                 $.get( "../data/newsfeed?startindex=" + start + "&endindex=" + end, function( data ) {
-                    var localPanelNode;
-                    var jsonObj = JSON.parse(data);
+                    var localPanelNode, jsonObj = JSON.parse(data), element, elementsAppended;
+            
+                    elementsAppended = $();
+                    
                     jQuery.each(jsonObj, function(i, val) {
-
                         if(typeof val.news_type != 'undefined' && val.news_type == 'login') {
-                            handleLoginNews(i, val);        
+                            elementsAppended = elementsAppended.add(getLoginPanelElement(val));        
                         } else if(typeof val.news_type != 'undefined' && val.news_type == 'death') {
-                            handleDeathNews(i, val);        
+                            elementsAppended = elementsAppended.add(getDeathPanelElement(val));        
                         } else if(typeof val.news_type != 'undefined' && val.news_type == 'mcmmo_levelup') {
-                            handleMcmmoLevelUpNews(i, val);        
+                            elementsAppended = elementsAppended.add(getLevelUpPanelElement(val));        
                         } else if(typeof val.news_type != 'undefined' && val.news_type == 'diamond_break') {
-                            handleDiamondBreakNews(i, val);        
+                            elementsAppended = elementsAppended.add(getDiamondPanelElement(val));        
                         }
                     });
+                    $("#nf-row").append(elementsAppended);
+                    $("#nf-row").shuffle('appended', elementsAppended);
                 });  
             }
 
+            var getDescriptiveCauseOfDeath = function(deathObj) {
+                if(deathObj.killers_name != null) {
+                    return "Murdered";
+                } else {
+                    switch(deathObj.cause_of_death) {
+                        case "BLOCK_EXPLOSION": 
+                            return "Explosives";
+                        case "CONTACT": 
+                            return "Sharp Objects";
+                        case "CUSTOM":
+                            return "Odd Death";
+                        case "DROWNING":
+                            return "Drowned";
+                        case "ENTITY_ATTACK":
+                            return "Mobbed!";
+                        case "ENTITY_EXPLOSION":
+                            return "Kaboom!";
+                        case "FALL":
+                            return "Long Way Down...";
+                        case "FALLING_BLOCK":
+                            return "Look Out Below!";
+                        case "FIRE":
+                            return "So Spice...";
+                        case "FIRE_TICK":
+                            return "Burn Baby, Burn";
+                        case "LAVA":
+                            return "Lava Burns";
+                        case "LIGHTNING":
+                            return "Electrical Death";
+                        case "MAGIC":
+                            return "Hocus Pocus";
+                        case "MELTING":
+                            return "I'm Meeelting";
+                        case "POISON":
+                            return "Poisoned";
+                        case "PROJECTILE":
+                            return "Death by Arrow";
+                        case "STARVATION":
+                            return "Starvation";
+                        case "SUFFOCATION":
+                            return "Suffocation";
+                        case "SUICIDE":
+                            return "Suicide";
+                        case "THORNS":
+                            return "Death by Thorns";
+                        case "VOID":
+                            return "Into the Void";
+                        case "WITHER":
+                            return "Withered";
+                        default:
+                            return "Death";
+                    }
+                }
+            }
         </script>
     </body>
 </html>

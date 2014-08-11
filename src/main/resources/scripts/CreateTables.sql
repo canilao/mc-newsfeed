@@ -66,4 +66,24 @@ CREATE TABLE IF NOT EXISTS
         time TIMESTAMP,
         block_type VARCHAR(40),
         group_label INT
-);
+    );
+
+-- Create the death groups table.
+CREATE TABLE IF NOT EXISTS 
+     death_groups (
+        id INTEGER IDENTITY,
+        player_id INT,
+        group_label INT,
+        death_event_uuid UUID
+    );
+
+-- Create the player death news table. 
+CREATE TABLE IF NOT EXISTS 
+     player_death_news  (
+        event_uuid UUID,
+        player_id INT,
+        time TIMESTAMP,
+        group_label INT,
+        death_count INT,
+        name VARCHAR(20)
+    );

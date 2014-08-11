@@ -6,7 +6,7 @@ SELECT * FROM (
                 'death' AS type, 
                 event_uuid,
                 time
-            FROM player_death_events 
+            FROM player_death_news
 
             UNION
 

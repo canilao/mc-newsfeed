@@ -112,6 +112,20 @@ public class Database {
       }.runTaskLater(NewsFeedPlugin.getInstance(), 20);
    }
 
+   private void scheduleDeathNewsFinder() {
+      new BukkitRunnable() {
+         public void run() {
+            try {
+               NewsFeedPlugin.getNewsFeedDatabase().runDeathNewsFinder();
+            } catch (IOException e) {
+               NewsFeedPlugin.logSevere("Failed to run news finder", e);
+            } catch (SQLException e) {
+               NewsFeedPlugin.logSevere("Failed to run news finder", e);
+            }
+         }
+      }.runTaskLater(NewsFeedPlugin.getInstance(), 20);
+   }
+
    public void insertPlayerQuit(String name, String time) throws SQLException {
       Connection connection = connPool.getConnection();
 
@@ -348,16 +362,21 @@ public class Database {
    private JSONObject selectDeathNews(UUID newsUUID, Timestamp newsTimestamp)
          throws SQLException {
       JSONObject jsonObj = new JSONObject();
-
+      JSONObject jsonDeathObj;
+      JSONArray jsonDeathArray = new JSONArray();
+      String name = "";
+      int playerId = -1, groupLabel = -1, deathCount;
+      Timestamp time;
+      
       Connection connection = connPool.getConnection();
 
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
-      query.append("SELECT a.player_id, b.name, a.time, a.killers_name, a.cause_of_death, a.death_message, a.weapon_used ");
-      query.append("FROM player_death_events a ");
-      query.append("JOIN players b ON a.player_id=b.id ");
-      query.append("WHERE event_uuid='%s'");
+      query.append("SELECT a.event_uuid, a.player_id, a.name, a.time, a.group_label, a.death_count ");
+      query.append("FROM player_death_news a ");
+      query.append("WHERE event_uuid='%s' ");
+      query.append("LIMIT 1 ");
       query.append(";");
 
       String querySql = String.format(query.toString(), newsUUID.toString());
@@ -365,18 +384,59 @@ public class Database {
       stmt = connection.createStatement();
 
       ResultSet rs = stmt.executeQuery(querySql);
-
+      
       while (rs.next()) {
+         playerId = rs.getInt("player_id");
+         time = rs.getTimestamp("time");
+         groupLabel = rs.getInt("group_label");
+         deathCount = rs.getInt("death_count");
+         name = rs.getString("name");
+         
          jsonObj.put("news_type", "death");
-         jsonObj.put("player_id", rs.getInt("player_id"));
-         jsonObj.put("name", rs.getString("name"));
-         jsonObj.put("time", rs.getTimestamp("time") + "Z");
-         jsonObj.put("killers_name", rs.getString("killers_name"));
-         jsonObj.put("cause_of_death", rs.getString("cause_of_death"));
-         jsonObj.put("death_message", rs.getString("death_message"));
-         jsonObj.put("weapon_used", rs.getString("weapon_used"));
+         jsonObj.put("player_id", playerId);
+         jsonObj.put("name", name);
+         jsonObj.put("time", time + "Z");
+         jsonObj.put("death_count", deathCount);
+      }
+     
+      // In case that nothing comes back from the query.
+      if(groupLabel == -1 || playerId == -1) {
+         return jsonObj;
       }
 
+      stmt.close();
+      
+      stmt = null;
+      query = new StringBuilder();
+
+      query.append("SELECT * ");
+      query.append("FROM death_groups a ");
+      query.append("JOIN player_death_events b ON a.death_event_uuid=b.event_uuid ");
+      query.append("WHERE a.group_label='%d' AND a.player_id='%d' ");
+      query.append("ORDER BY TIME ASC ");
+      query.append(";");
+
+      querySql = String.format(query.toString(), groupLabel, playerId);
+
+      stmt = connection.createStatement();
+
+      rs = stmt.executeQuery(querySql);     
+      
+      while (rs.next()) { 
+         jsonDeathObj = new JSONObject();
+         
+         jsonDeathObj.put("event_uuid", rs.getString("event_uuid"));
+         jsonDeathObj.put("time", rs.getTimestamp("time") + "Z");
+         jsonDeathObj.put("killers_name", rs.getString("killers_name"));
+         jsonDeathObj.put("cause_of_death", rs.getString("cause_of_death"));
+         jsonDeathObj.put("death_message", rs.getString("death_message"));
+         jsonDeathObj.put("weapon_used", rs.getString("weapon_used"));
+         
+         jsonDeathArray.add(jsonDeathObj);
+      }
+      
+      jsonObj.put("deaths", jsonDeathArray);
+      
       stmt.close();
       connection.close();
 
@@ -510,6 +570,9 @@ public class Database {
 
       stmt.close();
       connection.close();
+
+      // Queue up the death news collection.
+      scheduleDeathNewsFinder();
    }
 
    private String surroundQuotes(String text) {
@@ -665,6 +728,58 @@ public class Database {
          int timeThreshold = 3;
          // Unit of time for the threshold.
          String unitOftime = "MINUTE";
+
+         String querySql = String.format(query.toString(), playerId,
+               timeThreshold, unitOftime);
+
+         stmt = connection.createStatement();
+
+         stmt.execute(querySql);
+      }
+
+      stmt.close();
+      connection.close();
+   }
+
+   public void runDeathNewsFinder() throws IOException, SQLException {
+
+      final String script = "/scripts/formatted/DeathNewsFinder.sql";
+
+      Connection connection = connPool.getConnection();
+      Statement stmt = null;
+      InputStream stream = Database.class.getResourceAsStream(script);
+      BufferedReader in = new BufferedReader(new InputStreamReader(stream));
+      StringBuilder query = new StringBuilder();
+      String line;
+      ArrayList<Integer> playerIdArray = new ArrayList<Integer>();
+
+      while ((line = in.readLine()) != null) {
+         query.append(line);
+         query.append(System.getProperty("line.separator"));
+      }
+
+      in.close();
+
+      // Get the player ids that we need to use to run the new finder.
+      StringBuilder queryIds = new StringBuilder();
+
+      queryIds.append("SELECT DISTINCT(id) FROM players;");
+      Statement stmtIds = connection.createStatement();
+      ResultSet rs = stmtIds.executeQuery(queryIds.toString());
+
+      while (rs.next()) {
+         playerIdArray.add(rs.getInt("id"));
+      }
+
+      stmtIds.close();
+
+      // Run the news for each player.
+      for (Integer playerId : playerIdArray) {
+
+         // 2 hours.
+         int timeThreshold = 2;
+         // Unit of time for the threshold.
+         String unitOftime = "HOUR";
 
          String querySql = String.format(query.toString(), playerId,
                timeThreshold, unitOftime);
