@@ -60,6 +60,11 @@
             height:364px;
             float: left;
             }
+            .nf-achievement-panel {
+            width:534px;
+            height:504px;
+            float: left;
+            }
             .nf-death-heading {
             background: -webkit-linear-gradient(red, black); /* For Safari 5.1 to 6.0 */
             background: -o-linear-gradient(red, black); /* For Opera 11.1 to 12.0 */
@@ -77,6 +82,12 @@
             background: -o-linear-gradient(orange, black); /* For Opera 11.1 to 12.0 */
             background: -moz-linear-gradient(orange, black); /* For Firefox 3.6 to 15 */
             background: linear-gradient(orange, black); /* Standard syntax */
+            }
+            .nf-achievement-heading {
+            background: -webkit-linear-gradient(orange, blue); /* For Safari 5.1 to 6.0 */
+            background: -o-linear-gradient(orange, blue); /* For Opera 11.1 to 12.0 */
+            background: -moz-linear-gradient(orange, blue); /* For Firefox 3.6 to 15 */
+            background: linear-gradient(orange, blue); /* Standard syntax */
             }
             h6 {
             color: white;
@@ -432,6 +443,35 @@
             
                return $.parseHTML(snip);
             }
+
+            function getAchievementPanelElement(val) {
+            
+                var snip = '';
+            
+                snip += '<div class="panel panel-default nf-achievement-panel">';
+                snip += '   <div class="panel-heading nf-achievement-heading">';
+                snip += '      <img src="https://minotar.net/avatar/nf-replace-name/32" class="pull-right">';
+                snip += '      <h6>Minecraft Achievement</h6>';
+                snip += '   </div>';
+                snip += '   <div>';
+                snip += '     <img class="img-responsive" src="images/achieve.png"/>';
+                snip += '   </div>';
+                snip += '   <div class="panel-body">';
+                snip += '      <div class="list-group">';
+                snip += '         <div class="panel-body">';
+                snip += '         <h3><i>nf-replace-name</i></h3>';
+                snip += '         <p><i>nf-replace-achievement</i></p>';
+                snip += '         <p class="nf-time"><i>nf-replace-time</i></p>';
+                snip += '      </div>';
+                snip += '   </div">';
+                snip += '</div>';
+
+                snip = snip.replace(/nf-replace-name/g, val.name);
+                snip = snip.replace(/nf-replace-achievement/g, val.achievement_type.replace(/_/g, ' '));
+                snip = snip.replace(/nf-replace-time/g, moment(val.time).calendar());
+            
+               return $.parseHTML(snip);
+            }
             
             function myFunction() {
                 startIndex = endIndex;
@@ -467,6 +507,8 @@
                             elementsAppended = elementsAppended.add(getLevelUpPanelElement(val));        
                         } else if(typeof val.news_type != 'undefined' && val.news_type == 'diamond_break') {
                             elementsAppended = elementsAppended.add(getDiamondPanelElement(val));        
+                        } else if(typeof val.news_type != 'undefined' && val.news_type == 'achievement') {
+                            elementsAppended = elementsAppended.add(getAchievementPanelElement(val));        
                         }
                     });
                     $("#nf-row").append(elementsAppended);

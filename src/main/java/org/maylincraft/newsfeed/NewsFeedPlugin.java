@@ -29,6 +29,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.maylincraft.newsfeed.data.McmmoFullStats;
 import org.maylincraft.newsfeed.data.NewsFeed;
 import org.maylincraft.newsfeed.database.Database;
+import org.maylincraft.newsfeed.listeners.AchievementListener;
 import org.maylincraft.newsfeed.listeners.BlockBreakListener;
 import org.maylincraft.newsfeed.listeners.LoginListener;
 import org.maylincraft.newsfeed.listeners.McmmoXpGainListener;
@@ -255,6 +256,8 @@ public class NewsFeedPlugin extends JavaPlugin {
             new PlayerDeathListener(this), this);
       getServer().getPluginManager().registerEvents(
             new BlockBreakListener(this), this);
+      getServer().getPluginManager().registerEvents(
+            new AchievementListener(this), this);
    }
 
    private void startWebServer() throws Exception {

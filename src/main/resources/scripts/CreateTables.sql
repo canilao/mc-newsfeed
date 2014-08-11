@@ -87,3 +87,12 @@ CREATE TABLE IF NOT EXISTS
         death_count INT,
         name VARCHAR(20)
     );
+
+CREATE TABLE IF NOT EXISTS 
+    achievement_events (
+        id INTEGER IDENTITY,
+        event_uuid UUID,
+        player_Id INT,
+        time TIMESTAMP,
+        achievement_type VARCHAR(30)
+    );

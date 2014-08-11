@@ -31,6 +31,14 @@ SELECT * FROM (
                 event_uuid,
                 time
             FROM diamond_break_news 
+
+            UNION
+
+            SELECT 
+                'achievement' AS type, 
+                event_uuid,
+                time
+            FROM achievement_events 
         )
         ORDER BY time DESC
     )

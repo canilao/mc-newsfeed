@@ -8,7 +8,7 @@ import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
 
 public class McmmoXpGainListener implements Listener {
 
-   static public final int levelUpEventInterval = 100;
+   static public final int levelUpEventInterval = 10;
 
    @SuppressWarnings("unused")
    private NewsFeedPlugin plugIn;
