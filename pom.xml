@@ -3,7 +3,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.maylincraft</groupId>
    <artifactId>newsfeed</artifactId>
-   <version>0.0.1</version>
+   <version>0.0.2</version>
    <properties>
       <jettyVersion>8.1.9.v20130131</jettyVersion>
    </properties>
@@ -152,6 +152,7 @@
                            </excludes>
                         </filter>
                      </filters>
+                     <minimizeJar>true</minimizeJar>
                   </configuration>
                </execution>
             </executions>

@@ -764,9 +764,10 @@ public class Database {
          stmt = connection.createStatement();
 
          stmt.execute(querySql);
+         
+         stmt.close();
       }
 
-      stmt.close();
       connection.close();
    }
 
@@ -816,9 +817,10 @@ public class Database {
          stmt = connection.createStatement();
 
          stmt.execute(querySql);
+         
+         stmt.close();
       }
 
-      stmt.close();
       connection.close();
    }
 
@@ -868,9 +870,10 @@ public class Database {
          stmt = connection.createStatement();
 
          stmt.execute(querySql);
+         
+         stmt.close();
       }
 
-      stmt.close();
       connection.close();
    }
 }
