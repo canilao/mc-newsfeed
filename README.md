@@ -1,6 +1,6 @@
 Newsfeed
 ========
-# Introduction
+## Introduction
 
 The goal of Newsfeed is to create an informational website for your players on your Bukkit server.  Often, players just want to know what has been happening on the server w/o logging in.  Newsfeed gives your players a way to stay in touch with your server, keeping them in the know.  Also, it gives the players a way to show off accomplishments they have made on the server.  Players just love letting people know what they have been up to and chatting about it later. 
 
@@ -8,7 +8,7 @@ To use Newsfeed, you just have to download the jar.  For now, Newsfeed has a dep
 
 I hope you guys enjoy Newsfeed as much as we have!
 
-# Newsfeed Data
+## Newsfeed Data
 
 Newsfeed will record and display the following (This will change in the future and be configurable):
 
@@ -21,13 +21,13 @@ Newsfeed will record and display the following (This will change in the future a
 
 ![alt Newsfeed](https://dl.dropboxusercontent.com/u/6293554/newsfeed.jpg "Newsfeed Example")
 
-# Github Project Page
+## Github Project Page
 [Github project page](https://github.com/canilao/mc-newsfeed)
 
-# Demo Page
+## Demo Page
 [Demo link at maylincraft.com](http://www.maylincraft.com/newsfeed)
 
-# Installation Instructions
+## Installation Instructions
 1. Stop your server.
 2. Because this is an early version of Newsfeed, please install the latest version of [McMMO](http://dev.bukkit.org/bukkit-plugins/mcmmo/) in your plugins directory
 3. Download the Newsfeed plugin and place the jar in your plugins directory.
@@ -35,5 +35,5 @@ Newsfeed will record and display the following (This will change in the future a
 5. Start playing and so that Newsfeed can begin recording events on your server.
 6. To view your Newfeed webpage, go to [http://localhost:1975/newsfeed](http://localhost:1975/newsfeed)
 
-# Commands, configuration, and permissions
+## Commands, configuration, and permissions
 Currently, Newsfeed has no commands, configuration, or permissions.  This is for simplicity.  Although there are future plans to configure how much information is posted to the website and commands to post information.  Permissions will come along with the commands.
