@@ -1,3 +1,11 @@
+-- Create the all news table    
+CREATE TABLE IF NOT EXISTS all_news (
+    id INTEGER,
+    type VARCHAR(20),
+    event_uuid UUID,
+    time TIMESTAMP
+);
+
 -- Table that records mcmmo level up events.
 CREATE TABLE IF NOT EXISTS mcmmo_levelup_events (
     id INTEGER IDENTITY,
@@ -88,6 +96,7 @@ CREATE TABLE IF NOT EXISTS
         name VARCHAR(20)
     );
 
+-- Create the vanilla achievements table.
 CREATE TABLE IF NOT EXISTS 
     achievement_events (
         id INTEGER IDENTITY,
@@ -96,3 +105,4 @@ CREATE TABLE IF NOT EXISTS
         time TIMESTAMP,
         achievement_type VARCHAR(30)
     );
+

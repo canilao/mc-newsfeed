@@ -27,7 +27,10 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.maylincraft.newsfeed.data.McmmoFullStats;
+import org.maylincraft.newsfeed.data.NewerNewsFeedGroup;
 import org.maylincraft.newsfeed.data.NewsFeed;
+import org.maylincraft.newsfeed.data.NewsFeedInitialGroup;
+import org.maylincraft.newsfeed.data.OlderNewsFeedGroup;
 import org.maylincraft.newsfeed.database.Database;
 import org.maylincraft.newsfeed.listeners.AchievementListener;
 import org.maylincraft.newsfeed.listeners.BlockBreakListener;
@@ -276,16 +279,22 @@ public class NewsFeedPlugin extends JavaPlugin {
       context.setHandler(resource_handler);
       context.setClassLoader(Thread.currentThread().getContextClassLoader());
 
-      ServletContextHandler helloContextHandler = new ServletContextHandler(
+      ServletContextHandler dataContextHandler = new ServletContextHandler(
             ServletContextHandler.SESSIONS);
-      helloContextHandler.setContextPath("/data");
-      helloContextHandler.addServlet(new ServletHolder(new McmmoFullStats()),
+      dataContextHandler.setContextPath("/data");
+      dataContextHandler.addServlet(new ServletHolder(new McmmoFullStats()),
             "/fullstats");
-      helloContextHandler.addServlet(new ServletHolder(new NewsFeed()),
+      dataContextHandler.addServlet(new ServletHolder(new NewsFeed()),
             "/newsfeed");
+      dataContextHandler.addServlet(new ServletHolder(new NewsFeedInitialGroup()),
+            "/newsfeedinitialgroup");
+      dataContextHandler.addServlet(new ServletHolder(new NewerNewsFeedGroup()),
+            "/newernewsfeedgroup");
+      dataContextHandler.addServlet(new ServletHolder(new OlderNewsFeedGroup()),
+            "/oldernewsfeedgroup");
 
       ContextHandlerCollection contexts = new ContextHandlerCollection();
-      contexts.setHandlers(new Handler[] { context, helloContextHandler });
+      contexts.setHandlers(new Handler[] { context, dataContextHandler });
 
       server.setHandler(contexts);
 

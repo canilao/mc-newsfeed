@@ -11,22 +11,27 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.maylincraft.newsfeed.NewsFeedPlugin;
 
-public class NewsFeed extends HttpServlet {
+public class NewsFeedInitialGroup extends HttpServlet {
 
-   private static final long serialVersionUID = 9091108444099548045L;
+   private static final long serialVersionUID = 1860794553944872859L;
 
    public void doGet(HttpServletRequest request, HttpServletResponse response)
          throws IOException, ServletException {
       try {
-         String startIndex = request.getParameter("startindex");
-         String endIndex = request.getParameter("endindex");
-         
-         if(startIndex == null || endIndex == null) {
+         String initialCountStr = request.getParameter("initialcount");
+
+         if (initialCountStr == null) {
             throw new Exception();
          }
-         
+
+         int initialCount = Integer.parseInt(initialCountStr);
+
+         if (initialCount < 1) {
+            throw new Exception();
+         }
+
          JSONArray jsonArray = NewsFeedPlugin.getNewsFeedDatabase()
-               .getNews(Integer.parseInt(startIndex), Integer.parseInt(endIndex));
+               .getNews(0, initialCount + 1);
 
          response.setContentType("text/html;charset=utf-8");
          response.setStatus(HttpServletResponse.SC_OK);
@@ -42,12 +47,16 @@ public class NewsFeed extends HttpServlet {
          response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
          response.addHeader("Access-Control-Allow-Origin", "*");
-      } catch (Exception e) {
-         NewsFeedPlugin.logWarning(
-               "Bad newsfeed query", e);
+      } catch (NumberFormatException e) {
+         NewsFeedPlugin.logWarning("Bad web request parameter", e);
 
          response.setContentType("text/html;charset=utf-8");
-         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      } catch (Exception e) {
+         NewsFeedPlugin.logWarning("Bad newsfeed query", e);
+
+         response.setContentType("text/html;charset=utf-8");
+         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
          response.addHeader("Access-Control-Allow-Origin", "*");
       }

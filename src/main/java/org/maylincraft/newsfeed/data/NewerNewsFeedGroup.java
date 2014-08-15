@@ -2,6 +2,7 @@ package org.maylincraft.newsfeed.data;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,29 +12,28 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.maylincraft.newsfeed.NewsFeedPlugin;
 
-public class NewsFeed extends HttpServlet {
+public class NewerNewsFeedGroup extends HttpServlet {
 
-   private static final long serialVersionUID = 9091108444099548045L;
+   private static final long serialVersionUID = 3596757668311956597L;
 
    public void doGet(HttpServletRequest request, HttpServletResponse response)
          throws IOException, ServletException {
       try {
-         String startIndex = request.getParameter("startindex");
-         String endIndex = request.getParameter("endindex");
-         
-         if(startIndex == null || endIndex == null) {
+         String startUUIDStr = request.getParameter("startUUID");
+
+         if (startUUIDStr == null) {
             throw new Exception();
          }
-         
-         JSONArray jsonArray = NewsFeedPlugin.getNewsFeedDatabase()
-               .getNews(Integer.parseInt(startIndex), Integer.parseInt(endIndex));
+
+         UUID startUUID = UUID.fromString(startUUIDStr);
+
+         JSONArray jsonArray = NewsFeedPlugin.getNewsFeedDatabase().getNewerNewsFeedsByUUID(startUUID);
 
          response.setContentType("text/html;charset=utf-8");
          response.setStatus(HttpServletResponse.SC_OK);
 
          response.getWriter().println(jsonArray.toJSONString());
          response.addHeader("Access-Control-Allow-Origin", "*");
-
       } catch (SQLException e) {
          NewsFeedPlugin.logWarning(
                "Fail to generate news feed for web request", e);
@@ -42,12 +42,16 @@ public class NewsFeed extends HttpServlet {
          response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
          response.addHeader("Access-Control-Allow-Origin", "*");
-      } catch (Exception e) {
-         NewsFeedPlugin.logWarning(
-               "Bad newsfeed query", e);
+      }  catch (NumberFormatException e) {
+         NewsFeedPlugin.logWarning("Bad web request parameter", e);
 
          response.setContentType("text/html;charset=utf-8");
-         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      }  catch (Exception e) {
+         NewsFeedPlugin.logWarning("Bad newsfeed query", e);
+
+         response.setContentType("text/html;charset=utf-8");
+         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
          response.addHeader("Access-Control-Allow-Origin", "*");
       }

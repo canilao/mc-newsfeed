@@ -222,9 +222,38 @@ public class Database {
       connection.close();
    }
 
-   @SuppressWarnings("unchecked")
-   public JSONArray getNewsFeed(int startIndex, int endIndex)
-         throws SQLException, IOException {
+   public void mergeAllNews() throws SQLException, IOException {
+
+      final String script = "/scripts/MergeAllNews.sql";
+
+      Connection connection = connPool.getConnection();
+      Statement stmt = null;
+      InputStream stream = Database.class.getResourceAsStream(script);
+      BufferedReader in = new BufferedReader(new InputStreamReader(stream));
+      StringBuilder queryFormat = new StringBuilder();
+      String line;
+
+      while ((line = in.readLine()) != null) {
+         queryFormat.append(line);
+         queryFormat.append(System.getProperty("line.separator"));
+      }
+
+      in.close();
+
+      String querySql = queryFormat.toString();
+
+      stmt = connection.createStatement();
+
+      stmt.execute(querySql);
+
+      stmt.close();
+      connection.close();
+   }
+
+   public JSONArray getNews(int startIndex, int endIndex) throws SQLException,
+         IOException {
+      
+      mergeAllNews();
 
       final String script = "/scripts/formatted/SelectNews.sql";
 
@@ -263,19 +292,8 @@ public class Database {
             newsUUID = UUID.fromString(rs.getString("event_uuid"));
             newsTimestamp = rs.getTimestamp("time");
 
-            if (newsType.equals("login")) {
-               jsonObj = selectLoginNews(newsUUID, newsTimestamp);
-            } else if (newsType.equals("death")) {
-               jsonObj = selectDeathNews(newsUUID, newsTimestamp);
-            } else if (newsType.equals("mcmmo_levelup")) {
-               jsonObj = selectMcmmoLevelUpNews(newsUUID, newsTimestamp);
-            } else if (newsType.equals("diamond_break")) {
-               jsonObj = selectDiamondBreakNews(newsUUID, newsTimestamp);
-            } else if (newsType.equals("achievement")) {
-               jsonObj = selectAchievementNews(newsUUID, newsTimestamp);
-            }
-
-            jsonArray.add(jsonObj);
+            jsonObj = extractNewsData(jsonObj, jsonArray, newsType, newsUUID,
+                  newsTimestamp);
          }
 
       } catch (SQLException e) {
@@ -287,6 +305,140 @@ public class Database {
       connection.close();
 
       return jsonArray;
+   }
+
+   public JSONArray getOlderNewsByUUID(UUID exclusiveStartUUID, int count)
+         throws SQLException, IOException {
+      
+      mergeAllNews();
+
+      final String script = "/scripts/formatted/SelectOlderNewsByUuid.sql";
+
+      Connection connection = connPool.getConnection();
+      Statement stmt = null;
+      InputStream stream = Database.class.getResourceAsStream(script);
+      BufferedReader in = new BufferedReader(new InputStreamReader(stream));
+      StringBuilder queryFormat = new StringBuilder();
+      String line;
+
+      while ((line = in.readLine()) != null) {
+         queryFormat.append(line);
+         queryFormat.append(System.getProperty("line.separator"));
+      }
+
+      in.close();
+
+      String querySql = String.format(queryFormat.toString(),
+            exclusiveStartUUID.toString(), exclusiveStartUUID.toString(), count);
+
+      ResultSet rs;
+      JSONObject jsonObj = new JSONObject();
+      JSONArray jsonArray = new JSONArray();
+
+      stmt = connection.createStatement();
+
+      rs = stmt.executeQuery(querySql);
+
+      String newsType;
+      UUID newsUUID;
+      Timestamp newsTimestamp;
+
+      try {
+         while (rs.next()) {
+            newsType = rs.getString("type");
+            newsUUID = UUID.fromString(rs.getString("event_uuid"));
+            newsTimestamp = rs.getTimestamp("time");
+
+            jsonObj = extractNewsData(jsonObj, jsonArray, newsType, newsUUID,
+                  newsTimestamp);
+         }
+
+      } catch (SQLException e) {
+         NewsFeedPlugin.logWarning(
+               "Failed to generate news feed for web request", e);
+      }
+
+      stmt.close();
+      connection.close();
+
+      return jsonArray;
+   }
+
+   public JSONArray getNewerNewsFeedsByUUID(UUID exclusiveStartUUID)
+         throws SQLException, IOException {
+      
+      mergeAllNews();
+
+      final String script = "/scripts/formatted/SelectNewerNewsByUuid.sql";
+
+      Connection connection = connPool.getConnection();
+      Statement stmt = null;
+      InputStream stream = Database.class.getResourceAsStream(script);
+      BufferedReader in = new BufferedReader(new InputStreamReader(stream));
+      StringBuilder queryFormat = new StringBuilder();
+      String line;
+
+      while ((line = in.readLine()) != null) {
+         queryFormat.append(line);
+         queryFormat.append(System.getProperty("line.separator"));
+      }
+
+      in.close();
+
+      String querySql = String.format(queryFormat.toString(),
+            exclusiveStartUUID.toString());
+
+      ResultSet rs;
+      JSONObject jsonObj = new JSONObject();
+      JSONArray jsonArray = new JSONArray();
+
+      stmt = connection.createStatement();
+
+      rs = stmt.executeQuery(querySql);
+
+      String newsType;
+      UUID newsUUID;
+      Timestamp newsTimestamp;
+
+      try {
+         while (rs.next()) {
+            newsType = rs.getString("type");
+            newsUUID = UUID.fromString(rs.getString("event_uuid"));
+            newsTimestamp = rs.getTimestamp("time");
+
+            jsonObj = extractNewsData(jsonObj, jsonArray, newsType, newsUUID,
+                  newsTimestamp);
+         }
+
+      } catch (SQLException e) {
+         NewsFeedPlugin.logWarning(
+               "Failed to generate news feed for web request", e);
+      }
+
+      stmt.close();
+      connection.close();
+
+      return jsonArray;
+   }
+
+   @SuppressWarnings("unchecked")
+   private JSONObject extractNewsData(JSONObject jsonObj, JSONArray jsonArray,
+         String newsType, UUID newsUUID, Timestamp newsTimestamp)
+         throws SQLException {
+      if (newsType.equals("login")) {
+         jsonObj = selectLoginNews(newsUUID, newsTimestamp);
+      } else if (newsType.equals("death")) {
+         jsonObj = selectDeathNews(newsUUID, newsTimestamp);
+      } else if (newsType.equals("mcmmo_levelup")) {
+         jsonObj = selectMcmmoLevelUpNews(newsUUID, newsTimestamp);
+      } else if (newsType.equals("diamond_break")) {
+         jsonObj = selectDiamondBreakNews(newsUUID, newsTimestamp);
+      } else if (newsType.equals("achievement")) {
+         jsonObj = selectAchievementNews(newsUUID, newsTimestamp);
+      }
+
+      jsonArray.add(jsonObj);
+      return jsonObj;
    }
 
    @SuppressWarnings("unchecked")
@@ -548,15 +700,16 @@ public class Database {
       connection.close();
    }
 
-   public void insertAchievementEvent(PlayerAchievementAwardedEvent event) throws Exception {
+   public void insertAchievementEvent(PlayerAchievementAwardedEvent event)
+         throws Exception {
       Connection connection = connPool.getConnection();
 
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
-      
+
       String playersName = null;
       String time = getIsoTime();
-      
+
       // TODO Change to UUID
       if (event.getPlayer() != null) {
          playersName = event.getPlayer().getName();
@@ -577,7 +730,8 @@ public class Database {
       query.append("  '%s'");
       query.append("); ");
 
-      String querySql = String.format(query.toString(), playersName, time, event.getAchievement().name());
+      String querySql = String.format(query.toString(), playersName, time,
+            event.getAchievement().name());
 
       stmt = connection.createStatement();
 
@@ -768,7 +922,7 @@ public class Database {
          stmt = connection.createStatement();
 
          stmt.execute(querySql);
-         
+
          stmt.close();
       }
 
@@ -821,7 +975,7 @@ public class Database {
          stmt = connection.createStatement();
 
          stmt.execute(querySql);
-         
+
          stmt.close();
       }
 
@@ -874,7 +1028,7 @@ public class Database {
          stmt = connection.createStatement();
 
          stmt.execute(querySql);
-         
+
          stmt.close();
       }
 

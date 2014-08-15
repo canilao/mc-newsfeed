@@ -260,6 +260,9 @@
                     startIndex = endIndex;
                     endIndex += 16;
                     addStories(startIndex, endIndex);
+                } else if (document.body.scrollHeight == 
+                           document.body.scrollTop) {
+                    // Get new stories.
                 }
             });            
             
