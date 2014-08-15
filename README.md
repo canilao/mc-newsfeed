@@ -28,8 +28,8 @@ A [link](https://github.com/canilao/mc-newsfeed) to the Github project page.
 ## Bukkit Project Page
 A [link](http://dev.bukkit.org/bukkit-plugins/newsfeed/) to the Bukkit project page.
 
-## Maylincraft Demo Page
-The demo [link](http://www.maylincraft.com/newsfeed) to maylincraft.com newsfeed shows how the latest version is working.  Play for a few minutes on maylincraft.com and see the newsfeed post your login. 
+## MaylinCraft Demo Page
+The demo [link](http://www.maylincraft.com/newsfeed) to MaylinCraft.com newsfeed shows how the latest version is working.  Play for a few minutes on MaylinCraft.com and see the newsfeed post your login. 
 
 ## Installation Instructions
 1. Stop your server.
