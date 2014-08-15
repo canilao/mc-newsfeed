@@ -2,9 +2,9 @@ Newsfeed
 ========
 ## Introduction
 
-The goal of Newsfeed is to create an informational website for your players on your Bukkit server.  Often, players just want to know what has been happening on the server w/o logging in.  Newsfeed gives your players a way to stay in touch with your server, keeping them in the know.  Also, it gives the players a way to show off accomplishments they have made on the server.  Players just love letting people know what they have been up to and chatting about it later. 
+Newsfeed is a Bukkit plugin that creates and instant website for your server.  Newsfeed's goal is to create an informational website for you and your players.  Often, players just want to know what has been happening on the server without logging in.  Newsfeed gives your players a way to stay in touch with your server, keeping them 'in the know'.  Also, it gives the players a way to show off accomplishments they have made on the server.  Gamers love letting people know what they have been up to and chatting about it later. 
 
-To use Newsfeed, you just have to download the jar.  For now, Newsfeed has a dependency on [McMMO](http://dev.bukkit.org/bukkit-plugins/mcmmo/).  Please have that installed.  After that, run your server and start playing.  At this point, everything is on autopilot from then on.  Don't worry about configurations, permissions, and commands.  To view your Newsfeed, just go to [http://localhost:1975/newsfeed](http://localhost:1975/newsfeed).  If you have a public server, make sure you open up port 1975 to the world.
+To use Newsfeed, all you have to do is download the jar and follow the the simple instructions below.  For now, Newsfeed has a dependency on [McMMO](http://dev.bukkit.org/bukkit-plugins/mcmmo/).  Please have that installed.  After that, run your server and start playing.  At this point, everything is on autopilot from then on.  Don't worry about configurations, permissions, and commands.  To view your Newsfeed, just go to [http://localhost:1975/newsfeed](http://localhost:1975/newsfeed).  If you have a public server, make sure you open up port 1975 to the world.
 
 I hope you guys enjoy Newsfeed as much as we have!
 
@@ -25,7 +25,7 @@ Newsfeed will record and display the following (This will change in the future a
 [Github project page](https://github.com/canilao/mc-newsfeed)
 
 ## Demo Page
-[Demo link at maylincraft.com](http://www.maylincraft.com/newsfeed)
+[Demo link to maylincraft.com newsfeed](http://www.maylincraft.com/newsfeed).  Play for a few minutes on maylincraft.com and see the newsfeed post your login. 
 
 ## Installation Instructions
 1. Stop your server.
