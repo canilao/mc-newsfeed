@@ -349,6 +349,7 @@ public class Database {
 
       while (rs.next()) {
          jsonObj.put("news_type", "diamond_break");
+         jsonObj.put("event_uuid", newsUUID.toString());
          jsonObj.put("block_count", rs.getInt("block_count"));
          jsonObj.put("name", rs.getString("name"));
          jsonObj.put("time", rs.getTimestamp("time") + "Z");
@@ -385,6 +386,7 @@ public class Database {
 
       while (rs.next()) {
          jsonObj.put("news_type", "mcmmo_levelup");
+         jsonObj.put("event_uuid", newsUUID.toString());
          jsonObj.put("player_id", rs.getInt("player_id"));
          jsonObj.put("name", rs.getString("name"));
          jsonObj.put("time", rs.getTimestamp("time") + "Z");
@@ -433,6 +435,7 @@ public class Database {
          name = rs.getString("name");
 
          jsonObj.put("news_type", "death");
+         jsonObj.put("event_uuid", newsUUID.toString());
          jsonObj.put("player_id", playerId);
          jsonObj.put("name", name);
          jsonObj.put("time", time + "Z");
@@ -506,6 +509,7 @@ public class Database {
 
       while (rs.next()) {
          jsonObj.put("news_type", "login");
+         jsonObj.put("event_uuid", newsUUID.toString());
          jsonObj.put("player_id", rs.getInt("player_id"));
          jsonObj.put("name", rs.getString("name"));
          jsonObj.put("group_label", rs.getInt("group_label"));
