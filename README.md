@@ -23,10 +23,13 @@ Newsfeed will record and display the following (This will change in the future a
 ![alt Newsfeed](https://dl.dropboxusercontent.com/u/6293554/newsfeed.jpg "Newsfeed Example")
 
 ## Github Project Page
-[Github project page](https://github.com/canilao/mc-newsfeed)
+A [link](https://github.com/canilao/mc-newsfeed) to the Github project page.
 
-## Demo Page
-[Demo link to maylincraft.com newsfeed](http://www.maylincraft.com/newsfeed).  Play for a few minutes on maylincraft.com and see the newsfeed post your login. 
+## Bukkit Project Page
+A [link](http://dev.bukkit.org/bukkit-plugins/newsfeed/) to the Bukkit project page.
+
+## Maylincraft Demo Page
+The demo [link](http://www.maylincraft.com/newsfeed) to maylincraft.com newsfeed shows how the latest version is working.  Play for a few minutes on maylincraft.com and see the newsfeed post your login. 
 
 ## Installation Instructions
 1. Stop your server.
