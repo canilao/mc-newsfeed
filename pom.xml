@@ -3,7 +3,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.maylincraft</groupId>
    <artifactId>newsfeed</artifactId>
-   <version>0.0.2</version>
+   <version>0.0.3</version>
    <properties>
       <jettyVersion>8.1.9.v20130131</jettyVersion>
    </properties>
