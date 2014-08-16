@@ -81,6 +81,8 @@ public class NewsFeedPlugin extends JavaPlugin {
          logSevere("Failed to initialize database: ", e);
       } catch (SQLException e) {
          logSevere("Failed to initialize database: ", e);
+      } catch (IOException e) {
+         logSevere("Failed to initialize database: ", e);
       }
 
       // Register our event listeners.
@@ -245,7 +247,7 @@ public class NewsFeedPlugin extends JavaPlugin {
    }
 
    private void initializeDatabase() throws InstantiationException,
-         IllegalAccessException, ClassNotFoundException, SQLException {
+         IllegalAccessException, ClassNotFoundException, SQLException, IOException {
       db = new Database();
       db.initialize();
    }

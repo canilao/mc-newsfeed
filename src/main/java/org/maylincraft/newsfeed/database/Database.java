@@ -51,7 +51,7 @@ public class Database {
    }
 
    public void initialize() throws SQLException, InstantiationException,
-         IllegalAccessException, ClassNotFoundException {
+         IllegalAccessException, ClassNotFoundException, IOException {
       setupDbConnection();
       createTables();
    }
@@ -206,17 +206,24 @@ public class Database {
       return playerId;
    }
 
-   private void createTables() throws SQLException {
+   private void createTables() throws SQLException, IOException {
+      final String script = "/scripts/CreateTables.sql";
+
       Connection connection = connPool.getConnection();
-
-      PreparedStatement stmt;
+      Statement stmt = null;
+      InputStream stream = Database.class.getResourceAsStream(script);
+      BufferedReader in = new BufferedReader(new InputStreamReader(stream));
       StringBuilder query = new StringBuilder();
+      String line;
 
-      query.append("RUNSCRIPT FROM 'classpath:/scripts/CreateTables.sql'");
+      while ((line = in.readLine()) != null) {
+         query.append(line);
+         query.append(System.getProperty("line.separator"));
+      }
 
-      stmt = connection.prepareStatement(query.toString());
-
-      stmt.executeUpdate();
+      stmt = connection.createStatement();
+      
+      stmt.execute(query.toString());
 
       stmt.close();
       connection.close();
