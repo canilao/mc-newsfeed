@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS mcmmo_levelup_events (
 -- List of players table.
 CREATE TABLE IF NOT EXISTS players (
     id INTEGER IDENTITY,
-    name VARCHAR(16) UNIQUE
+    name VARCHAR(16),
+    player_uuid UUID UNIQUE
 );
 
 -- Login table.
@@ -27,7 +28,8 @@ CREATE TABLE IF NOT EXISTS logins (
     id BIGINT IDENTITY,
     player_Id INT,
     action VARCHAR(10),
-    time TIMESTAMP
+    time TIMESTAMP,
+    event_uuid UUID
 );
 
 -- Player deaths table.

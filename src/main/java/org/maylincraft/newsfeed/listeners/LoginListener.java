@@ -1,7 +1,6 @@
 package org.maylincraft.newsfeed.listeners;
 
 import java.sql.SQLException;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -22,7 +21,7 @@ public class LoginListener implements Listener {
    public void onPlayerLogin(PlayerLoginEvent event) {
       Database db = NewsFeedPlugin.getNewsFeedDatabase();
       try {
-         db.insertRecordNewPlayer(event.getPlayer().getName());
+         db.insertRecordNewPlayer(event.getPlayer());
          db.insertPlayerLogin(event.getPlayer().getName(),
                Database.getIsoTime());
       } catch (SQLException e) {

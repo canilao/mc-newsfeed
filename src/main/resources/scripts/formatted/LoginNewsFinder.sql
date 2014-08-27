@@ -14,6 +14,7 @@ CREATE TEMPORARY TABLE IF NOT EXISTS
         player_id INT,
         action VARCHAR(10),
         time TIMESTAMP,
+        event_uuid UUID,
         lag_seq INT,
         lag_time TIMESTAMP,
         group_label INT,
@@ -59,7 +60,7 @@ MERGE INTO login_news (
     SELECT *
     FROM (
         SELECT 
-            RANDOM_UUID() AS event_uuid,
+            a.event_uuid,
             a.player_id,
             a.name, 
             a.group_label, 

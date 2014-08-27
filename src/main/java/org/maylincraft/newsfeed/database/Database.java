@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -74,8 +73,8 @@ public class Database {
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
-      query.append("INSERT INTO logins (player_Id, time, action)");
-      query.append("    SELECT id, '%s',");
+      query.append("INSERT INTO logins (player_Id, time, event_uuid, action)");
+      query.append("    SELECT id, '%s', RANDOM_UUID(), ");
       query.append("        CASE WHEN (");
       query.append("                SELECT COUNT(*) FROM LOGINS WHERE player_id=(");
       query.append("                    SELECT id FROM PLAYERS WHERE name='%s')");
@@ -206,6 +205,39 @@ public class Database {
       return playerId;
    }
 
+   public UUID getPlayerUUID(String name) throws Exception {
+      Connection connection = connPool.getConnection();
+
+      Statement stmt = null;
+      StringBuilder query = new StringBuilder();
+
+      query.append("SELECT player_uuid FROM players where name='%s';");
+
+      String querySql = String.format(query.toString(), name);
+
+      stmt = connection.createStatement();
+
+      ResultSet rs = stmt.executeQuery(querySql);
+
+      UUID playerUUID = null;
+
+      while (rs.next()) {
+         playerUUID = UUID.fromString(rs.getString("player_uuid"));
+         if (playerUUID != null) {
+            break;
+         }
+      }
+
+      if (playerUUID == null) {
+         throw new Exception();
+      }
+
+      stmt.close();
+      connection.close();
+
+      return playerUUID;
+   }
+
    private void createTables() throws SQLException, IOException {
       final String script = "/scripts/CreateTables.sql";
 
@@ -222,7 +254,7 @@ public class Database {
       }
 
       stmt = connection.createStatement();
-      
+
       stmt.execute(query.toString());
 
       stmt.close();
@@ -259,7 +291,7 @@ public class Database {
 
    public JSONArray getNews(int startIndex, int endIndex) throws SQLException,
          IOException {
-      
+
       mergeAllNews();
 
       final String script = "/scripts/formatted/SelectNews.sql";
@@ -316,7 +348,7 @@ public class Database {
 
    public JSONArray getOlderNewsByUUID(UUID exclusiveStartUUID, int count)
          throws SQLException, IOException {
-      
+
       mergeAllNews();
 
       final String script = "/scripts/formatted/SelectOlderNewsByUuid.sql";
@@ -335,8 +367,9 @@ public class Database {
 
       in.close();
 
-      String querySql = String.format(queryFormat.toString(),
-            exclusiveStartUUID.toString(), exclusiveStartUUID.toString(), count);
+      String querySql = String
+            .format(queryFormat.toString(), exclusiveStartUUID.toString(),
+                  exclusiveStartUUID.toString(), count);
 
       ResultSet rs;
       JSONObject jsonObj = new JSONObject();
@@ -373,7 +406,7 @@ public class Database {
 
    public JSONArray getNewerNewsFeedsByUUID(UUID exclusiveStartUUID)
          throws SQLException, IOException {
-      
+
       mergeAllNews();
 
       final String script = "/scripts/formatted/SelectNewerNewsByUuid.sql";
@@ -648,6 +681,7 @@ public class Database {
    @SuppressWarnings("unchecked")
    private JSONObject selectLoginNews(UUID newsUUID, Timestamp newsTimestamp)
          throws SQLException {
+      Player thePlayer = null;
       JSONObject jsonObj = new JSONObject();
 
       Connection connection = connPool.getConnection();
@@ -676,10 +710,15 @@ public class Database {
          jsonObj.put("logout_time", rs.getTimestamp("logout_time") + "Z");
          jsonObj.put("last_action", rs.getString("last_action"));
          jsonObj.put("play_time_minutes", rs.getString("play_time_minutes"));
-         // TODO: Change player information to UUIDs.
-         Player thePlayer = Bukkit.getPlayerExact(rs.getString("name"));
+         thePlayer = null;
+         try {
+            thePlayer = Bukkit.getPlayer(getPlayerUUID(rs.getString("name")));
+         } catch (Exception e) {
+            NewsFeedPlugin.logWarning("Failed to get player using name", e);
+         }
          boolean isOnline = thePlayer == null ? false : thePlayer.isOnline()
-               && rs.getString("last_action").equals("login");
+               && (rs.getString("last_action").equals("login") || rs.getString(
+                     "last_action").equals("initial"));
          jsonObj.put("is_online", isOnline);
       }
 
@@ -689,15 +728,17 @@ public class Database {
       return jsonObj;
    }
 
-   public void insertRecordNewPlayer(String name) throws SQLException {
+   public void insertRecordNewPlayer(Player thePlayer) throws SQLException {
       Connection connection = connPool.getConnection();
 
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
-      query.append("MERGE INTO players KEY(name) VALUES(SELECT id FROM players WHERE name='%s', '%s');");
+      query.append("MERGE INTO players KEY(player_uuid) VALUES(SELECT id FROM players WHERE player_uuid='%s', '%s', '%s');");
 
-      String querySql = String.format(query.toString(), name, name);
+      String querySql = String.format(query.toString(),
+            thePlayer.getUniqueId(), thePlayer.getName(),
+            thePlayer.getUniqueId());
 
       stmt = connection.createStatement();
 
@@ -714,12 +755,11 @@ public class Database {
       Statement stmt = null;
       StringBuilder query = new StringBuilder();
 
-      String playersName = null;
+      UUID playersUUID = null;
       String time = getIsoTime();
 
-      // TODO Change to UUID
       if (event.getPlayer() != null) {
-         playersName = event.getPlayer().getName();
+         playersUUID = event.getPlayer().getUniqueId();
       } else {
          throw new Exception("Failed to insert Achievement");
       }
@@ -732,13 +772,13 @@ public class Database {
       query.append(") ");
       query.append("VALUES (");
       query.append("  RANDOM_UUID(),");
-      query.append("  SELECT id FROM PLAYERS WHERE name='%s',");
+      query.append("  SELECT id FROM PLAYERS WHERE player_uuid='%s',");
       query.append("  '%s',");
       query.append("  '%s'");
       query.append("); ");
 
-      String querySql = String.format(query.toString(), playersName, time,
-            event.getAchievement().name());
+      String querySql = String.format(query.toString(), playersUUID.toString(),
+            time, event.getAchievement().name());
 
       stmt = connection.createStatement();
 
