@@ -60,7 +60,7 @@ MERGE INTO login_news (
     SELECT *
     FROM (
         SELECT 
-            a.event_uuid,
+            (SELECT event_uuid FROM grouped_rows WHERE grouped_rows.group_label= a.group_label ORDER BY seq ASC LIMIT 1) as event_uuid,
             a.player_id,
             a.name, 
             a.group_label, 
